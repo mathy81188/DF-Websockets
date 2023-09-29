@@ -20,7 +20,7 @@ class CartManager {
 
   async createCart() {
     try {
-      const carts = await this.getCarts({});
+      const carts = await this.getCarts();
       let id;
       let products;
       if (!carts.length) {
@@ -30,8 +30,12 @@ class CartManager {
         id = carts[carts.length - 1].id + 1;
         products = [];
       }
-      carts.push({ id, ...products });
+      const newCart = { id, products };
+      carts.push(newCart);
+      // carts.push({ id, ...products });
+
       await fs.promises.writeFile(this.path, JSON.stringify(carts));
+      return newCart;
     } catch (error) {
       return error;
     }

@@ -7,9 +7,8 @@ const router = Router();
 router.post("/", async (req, res) => {
   try {
     const newCart = await CartManager.createCart();
-    res.status(200).json({ message: "Cart created", cart: newCart });
-    req.cart = newCart;
-    res.redirect(`/cart/${newCart.id}`);
+    res.status(200).json({ message: `Carrito creado con exito  `, newCart });
+    return newCart;
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,0 +1,9 @@
+{{!-- Crear una vista “index.handlebars” la cual contenga una lista de todos los productos agregados hasta el momento --}}
+<h1>INDEX</h1>
+{{#each products}}
+<h3> Id {{id}}</h3>
+<h1>{{title}}</h1>
+<h2>Precio ${{price}}</h2>
+<h3>Stock {{stock}}</h3>
+
+{{/each}}

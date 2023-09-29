@@ -160,3 +160,5 @@ async function test() {
 test();*/
 
 export default new ProductManager("products.json");
+
+//export const ProductsManager = new ProductManager("products.json");
