@@ -2,9 +2,10 @@ import express from "express";
 import { engine } from "express-handlebars";
 import viewsRouter from "./router/views.router.js";
 import { __dirname } from "./utils.js";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import productsRouter from "./router/products.router.js";
 import cartRouter from "./router/carts.router.js";
+import ProductManager from "./ProductManager.js";
 const app = express();
 
 app.use(express.json());
@@ -28,4 +29,14 @@ const socketServer = new Server(httpServer);
 
 socketServer.on("connection", (socket) => {
   console.log(`cliente conectado ${socket.id}`);
+
+  socket.on("addProduct", async (product) => {
+    const newProduct = await ProductManager.addProduct(product);
+    socket.emit("productCreated", newProduct);
+  });
+
+  socket.on("deleteProduct", async (id) => {
+    const deletedProduct = await ProductManager.deleteProduct(id);
+    socket.emit("productDeleted", deletedProduct);
+  });
 });

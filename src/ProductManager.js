@@ -28,19 +28,19 @@ class ProductManager {
       if (
         !product.title ||
         !product.description ||
-        !product.category ||
-        !product.price ||
-        !product.thumbnail ||
-        !product.code ||
-        !product.stock
+        //  !product.category ||
+        !product.price
+        //  !product.thumbnail ||
+        //  !product.code ||
+        //   !product.stock
       ) {
         console.log("Faltan campos");
         return;
       }
-      if (codeRepeat) {
-        console.log("El código ya existe");
-        return;
-      }
+      //if (codeRepeat) {
+      //   console.log("El código ya existe");
+      //   return;
+      //    }
       let id;
 
       if (!products.length) {
