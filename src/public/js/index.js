@@ -6,8 +6,8 @@ const inputDescription = document.getElementById("description");
 const inputPrice = document.getElementById("price");
 const table = document.getElementById("table");
 const tableBody = document.getElementById("tableBody");
+const deleteBtn = document.getElementById("deleteBtn");
 
-const button = document.getElementById("deletebtn");
 form.onsubmit = (e) => {
   e.preventDefault();
   const product = {
@@ -33,16 +33,24 @@ socketClient.on("productCreated", (product) => {
   table.innerHTML += row;
 });
 
-deleteBtn.on = (e, id) => {
+deleteBtn.addEventListener("click", (e, productId) => {
   e.preventDefault();
 
-  socketClient.emit("deleteProduct", id);
-};
+  socketClient.emit("deleteProduct", productId);
+});
 
-socketClient.on("productDeleted", (id) => {
-  let encontrarId = products.find((element) => element.id === id);
+socketClient.on("updateProducts", (product) => {
+  // table.innerHTML = "";
+  const { id, title, description, price } = product;
 
-  products = products.filter((productId) => {
-    return productId !== encontrarId;
-  });
+  const row = `
+    <tr>
+    
+            <td>${id}</td>
+            <td>${title}</td>
+            <td>${description}</td>
+            <td>${price}</td>
+            <button>${deleteBtn}</button>
+        </tr>`;
+  table.innerHTML += row;
 });

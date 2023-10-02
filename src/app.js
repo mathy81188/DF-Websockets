@@ -38,6 +38,8 @@ socketServer.on("connection", (socket) => {
   socket.on("deleteProduct", async (id) => {
     const deletedProduct = await ProductManager.deleteProduct(+id);
     socket.emit("productDeleted", deletedProduct);
-    return await ProductManager.getProducts();
+
+    const updatedProducts = await ProductManager.getProducts({});
+    socketServer.emit("updatedProducts", updatedProducts);
   });
 });
