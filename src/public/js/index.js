@@ -33,7 +33,16 @@ socketClient.on("productCreated", (product) => {
   table.innerHTML += row;
 });
 
-socketClient.on("productDeleted", (id) => {
+deleteBtn.on = (e, id) => {
   e.preventDefault();
-  socketClient.emit("productDeleted", id);
+
+  socketClient.emit("deleteProduct", id);
+};
+
+socketClient.on("productDeleted", (id) => {
+  let encontrarId = products.find((element) => element.id === id);
+
+  products = products.filter((productId) => {
+    return productId !== encontrarId;
+  });
 });
