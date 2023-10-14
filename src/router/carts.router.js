@@ -1,12 +1,12 @@
 import Router from "express";
 
-import CartManager from "../CartManager.js";
+import { cartManager } from "../Dao/MongoDB/cart.js";
 
 const router = Router();
 
 router.post("/", async (req, res) => {
   try {
-    const newCart = await CartManager.createCart();
+    const newCart = await cartManager.create();
     res.status(200).json({ message: `Carrito creado con exito  `, newCart });
     return newCart;
   } catch (error) {
@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
 router.get("/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
-    const cart = await CartManager.getCartById(+cid);
+    const cart = await cartManager.findById(+cid);
     if (!cart) {
       res.status(400).json({ message: "Cart not found with the id" });
       return;
@@ -32,7 +32,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
   try {
     const { cid, pid } = req.params;
 
-    const cart = await CartManager.addProductToCart(+cid, +pid);
+    const cart = await cartManager.create(+cid, +pid);
 
     res.status(200).json({ message: "Product added to the Cart" });
   } catch (error) {

@@ -1,11 +1,11 @@
 import { Router } from "express";
-import ProductManager from "../ProductManager.js";
+import { productManager } from "../Dao/MongoDB/product.js";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const product = await ProductManager.getProducts(req.query);
+    const product = await productManager.find(req.query);
     if (!product.length) {
       return res.status(200).json({ message: "No products" });
     }
@@ -18,9 +18,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:pid", async (req, res) => {
-  const { pid } = req.params;
+  const { id } = req.params;
   try {
-    const product = await ProductManager.getProductById(+pid);
+    const product = await productManager.findById(id);
     if (!product) {
       res.status(400).json({ message: "Product not found with the id" });
     }
@@ -31,15 +31,14 @@ router.get("/:pid", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { title, description, price, thumbnail, code, stock } = req.body;
-  if (!title || !description || !price || !thumbnail || !code || !stock) {
+  const { title, description, price } = req.body;
+  if (!title || !description || !price) {
     return res.status(400).json({ message: "Some data is missing" });
   }
   try {
-    const newProd = await ProductManager.addProduct(req.body);
+    const newProd = await productManager.create(req.body);
+
     res.status(200).json({ message: "Product created", prod: newProd });
-    req.prod = newProd;
-    res.redirect(`/product/${newProd.id}`);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -49,7 +48,7 @@ router.delete("/:pid", async (req, res) => {
   const { pid } = req.params;
   console.log(pid);
   try {
-    const response = await ProductManager.deleteProduct(+pid);
+    const response = await productManager.deleteOne(+pid);
     if (response === -1) {
       res.status(400).json({ message: "Product not found with the id" });
     } else {
@@ -63,7 +62,7 @@ router.delete("/:pid", async (req, res) => {
 router.put("/:pid", async (req, res) => {
   const { pid } = req.params;
   try {
-    const response = await ProductManager.updateProduct(+pid, req.body);
+    const response = await productManager.updateOne(+pid, req.body);
     if (response === -1) {
       res.status(400).json({ message: "Product not found with the id" });
     } else {
