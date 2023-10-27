@@ -1,18 +1,36 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import mongoStore from "connect-mongo";
 import { engine } from "express-handlebars";
 import viewsRouter from "./router/views.router.js";
 import { __dirname } from "./utils.js";
 import { Server } from "socket.io";
 import "./db/config.js";
+import usersRouter from "./router/users.router.js";
 import productsRouter from "./router/products.router.js";
 import cartRouter from "./router/carts.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 const app = express();
-
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
+
+const URI =
+  "mongodb+srv://matiasbritez88:matias1188@codercluster0.j6xuhmy.mongodb.net/ecommerce?retryWrites=true&w=majority";
+app.use(
+  session({
+    secret: "SESSIONSECRETKEY",
+    cookie: {
+      maxAge: 60 * 60 * 1000,
+    },
+    store: new mongoStore({
+      mongoUrl: URI,
+    }),
+  })
+);
 
 app.engine("handlebars", engine());
 app.set("views", __dirname + "/views");
@@ -23,6 +41,7 @@ app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
 app.use("/api/chat", viewsRouter);
+app.use("/api/users", usersRouter);
 
 const httpServer = app.listen(8080, () => {
   console.log("escuchando puerto 8080");

@@ -1,5 +1,5 @@
-{{! Crear una vista “index.handlebars” la cual contenga una lista de todos los productos agregados hasta el momento }}
-<h1>INDEX</h1>
+<h3>Bienvenido {{first_name}}, email : {{email}}</h3>
+<button onclick="location.href='api/users/logout'">Logout</button>
 {{#each products}}
 
   <h1>{{title}}</h1>
