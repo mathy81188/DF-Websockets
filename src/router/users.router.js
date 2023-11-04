@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { compareData, hashData } from "../utils.js";
+import passport from "passport";
 const router = Router();
 
 router.post("/login", async (req, res) => {
@@ -27,7 +28,8 @@ router.post("/signup", async (req, res) => {
     ...req.body,
     password: hashedPass,
   });
-  res.status(200).json({ message: "User created", createdUser });
+  // res.status(200).json({ message: "User created", createdUser });
+  res.redirect("/login");
 });
 
 router.get("/logout", (req, res) => {
@@ -35,4 +37,32 @@ router.get("/logout", (req, res) => {
     res.redirect("/login");
   });
 });
+router.get(
+  "/auth/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+router.get(
+  "/auth/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/",
+  }),
+  (req, res) => {
+    req.session.user = req.user.id;
+    // Successful authentication, redirect home.
+    res.redirect("/");
+  }
+);
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await usersManager.findById(id);
+    console.log(user);
+    res.status(200).json({ message: "user found", user });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 export default router;
