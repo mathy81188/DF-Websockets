@@ -3,6 +3,8 @@ import { usersManager } from "./Dao/MongoDB/users.js";
 import { Strategy as strategy } from "passport-local";
 import { Strategy as githubStrategy } from "passport-github2";
 import { compareData, hashData } from "./utils.js";
+import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
+const jwt_secret = "jwt";
 
 passport.use(
   "signup",
@@ -53,13 +55,14 @@ passport.use(
   new githubStrategy(
     {
       clientID: "Iv1.d1887fb60d5192bb",
-      clientSecret: "044958df53d08a167623b18b5d4ff208dd8d39f1",
+      clientSecret: "45edd6841cbcc8b5d6761aa6dbf59f24d3e916cb",
       callbackURL: "http://localhost:8080/auth/github/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       done(null, false);
       /*  try {
         const userData = await usersManager.findByEmail(profile.email);
+        console.log("profile", profile);
         //login
         if (userData) {
           if (userData.github) {
@@ -84,6 +87,40 @@ passport.use(
     }
   )
 );
+
+//jwt
+/*
+passport.use(
+  "jwt",
+  new JwtStrategy(
+    {
+      secretOrKey: jwt_secret,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    },
+    async (jwt_payload, done) => {
+      console.log("payload", jwt_payload);
+      done(null, false);
+    }
+  )
+);
+*/
+const cookieExtractor = (req) => {
+  return req.cookies.token;
+};
+passport.use(
+  "jwt",
+  new JwtStrategy(
+    {
+      secretOrKey: jwt_secret,
+      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+    },
+    async (jwt_payload, done) => {
+      console.log("payload", jwt_payload);
+      done(null, false);
+    }
+  )
+);
+
 passport.serializeUser(function (user, done) {
   done(null, user._id);
 });

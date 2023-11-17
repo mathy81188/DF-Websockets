@@ -1,12 +1,16 @@
 import { usersModel } from "../models/users.model.js";
+import Manager from "./manager.js";
 
-class UsersManager {
+class UsersManager extends Manager {
+  constructor() {
+    super(usersModel, "carts");
+  }
   async findById(id) {
     const response = await usersModel.findById(id);
     return response;
   }
   async findByEmail(email) {
-    const response = await usersModel.findOne({ email });
+    const response = await usersModel.findOne({ email }).populate("carts");
     return response;
   }
 

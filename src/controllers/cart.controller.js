@@ -18,6 +18,7 @@ async function findCart(req, res) {
       res.status(400).json({ message: "Cart not found with the id" });
       return;
     }
+
     res.status(200).json({ message: "Cart found", cart });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -7,13 +7,15 @@ import { engine } from "express-handlebars";
 import viewsRouter from "./router/views.router.js";
 import { __dirname } from "./utils.js";
 import { Server } from "socket.io";
-import "./db/config.js";
+import config from "./config.js";
+
 import "./passport.js";
 import usersRouter from "./router/users.router.js";
 import productsRouter from "./router/products.router.js";
 import cartRouter from "./router/carts.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
+
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
@@ -21,8 +23,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 
 //session
-const URI =
-  "mongodb+srv://matiasbritez88:matias1188@codercluster0.j6xuhmy.mongodb.net/ecommerce?retryWrites=true&w=majority";
+//const URI =
+// "mongodb+srv://matiasbritez88:matias1188@codercluster0.j6xuhmy.mongodb.net/ecommerce?retryWrites=true&w=majority";
+const URI = config.mongouri;
+// ;
 app.use(
   session({
     secret: "SESSIONSECRETKEY",

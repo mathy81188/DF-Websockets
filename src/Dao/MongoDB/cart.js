@@ -2,7 +2,7 @@ import { cartModel } from "../models/carts.model.js";
 import Manager from "./manager.js";
 class CartManager extends Manager {
   constructor() {
-    super(cartModel);
+    super(cartModel, "products.product");
   }
   async createCart(obj) {
     const createdCart = await cartModel.create(obj);
@@ -10,6 +10,7 @@ class CartManager extends Manager {
   }
   async findCartById(id) {
     const cart = await cartModel.findById(id).populate("products");
+
     return cart;
   }
 
@@ -38,8 +39,8 @@ class CartManager extends Manager {
     let cart = await cartModel.findById(cid);
     console.log(cart);
 
-    let productIndex = cart.products.findIndex(
-      (product) => product.productId === pid
+    let productIndex = cart.products.findIndex((products) =>
+      products.product.equals(pid)
     );
     if (productIndex === -1) {
       cart.products.push({
@@ -47,7 +48,7 @@ class CartManager extends Manager {
         quantity: 1,
       });
     } else {
-      cart.products[productIndex].quantity += 1;
+      cart.products[productIndex].quantity++;
     }
 
     await cart.save();

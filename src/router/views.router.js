@@ -7,7 +7,7 @@ const router = Router();
 router.get("/", async (req, res) => {
   const { email, first_name } = req.session;
 
-  const products = await productManager.find();
+  const products = await productManager.find({});
   res.render("index", { products, first_name, email });
 });
 

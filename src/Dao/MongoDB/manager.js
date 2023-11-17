@@ -1,9 +1,10 @@
 export default class Manager {
-  constructor(model) {
+  constructor(model, populating) {
     this.model = model;
+    this.populating = populating;
   }
   async find() {
-    return this.model.find().lean();
+    return this.model.find().populate(this.populating).lean();
   }
 
   async findById(id) {
