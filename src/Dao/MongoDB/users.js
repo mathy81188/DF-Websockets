@@ -3,14 +3,15 @@ import Manager from "./manager.js";
 
 class UsersManager extends Manager {
   constructor() {
-    super(usersModel, "carts");
+    super(usersModel, "cart");
   }
   async findById(id) {
     const response = await usersModel.findById(id);
     return response;
   }
+
   async findByEmail(email) {
-    const response = await usersModel.findOne({ email }).populate("carts");
+    const response = await usersModel.findOne({ email }).populate("cart");
     return response;
   }
 

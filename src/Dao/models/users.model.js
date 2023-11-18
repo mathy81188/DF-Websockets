@@ -19,12 +19,16 @@ const usersSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false,
   },
-  github: {
+  google: {
     type: Boolean,
     default: false,
   },
+  /*  github: {
+    type: Boolean,
+    default: false,
+  },*/
   role: {
     type: String,
     profile: ["isAdmin", "user"],

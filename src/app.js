@@ -8,11 +8,11 @@ import viewsRouter from "./router/views.router.js";
 import { __dirname } from "./utils.js";
 import { Server } from "socket.io";
 import config from "./config.js";
-
 import "./passport.js";
 import usersRouter from "./router/users.router.js";
 import productsRouter from "./router/products.router.js";
 import cartRouter from "./router/carts.router.js";
+import sessionRouter from "./router/sessions.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 
@@ -23,13 +23,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 
 //session
-//const URI =
-// "mongodb+srv://matiasbritez88:matias1188@codercluster0.j6xuhmy.mongodb.net/ecommerce?retryWrites=true&w=majority";
 const URI = config.mongouri;
+const SESSION = config.sessionSecret;
 // ;
 app.use(
   session({
-    secret: "SESSIONSECRETKEY",
+    //  secret: "SESSIONSECRETKEY",
+    secret: SESSION,
     cookie: {
       maxAge: 60 * 60 * 1000,
     },
@@ -54,6 +54,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartRouter);
 app.use("/api/chat", viewsRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/sessions", sessionRouter);
 
 //server
 const httpServer = app.listen(8080, () => {
