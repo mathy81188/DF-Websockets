@@ -12,6 +12,7 @@ class UsersManager extends Manager {
 
   async findByEmail(email) {
     const response = await usersModel.findOne({ email }).populate("cart");
+    console.log("findEmail", response);
     return response;
   }
 
