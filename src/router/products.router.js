@@ -6,6 +6,8 @@ import {
   deleteProduct,
   updateProduct,
 } from "../controllers/product.controller.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roles } from "../constants.js";
 
 const router = Router();
 
@@ -13,7 +15,7 @@ router.get("/", getAllProducts);
 
 router.get("/:pid", findByProductId);
 
-router.post("/", createProduct);
+router.post("/", authMiddleware([roles.ADMIN]), createProduct);
 
 router.delete("/:pid", deleteProduct);
 

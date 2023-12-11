@@ -1,17 +1,15 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema({
   first_name: {
     type: String,
-    required: true,
   },
   last_name: {
     type: String,
-    required: true,
   },
   email: {
     type: String,
-    required: true,
+
     unique: true,
   },
   age: {
@@ -19,23 +17,19 @@ const usersSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: false,
   },
   google: {
     type: Boolean,
     default: false,
   },
-  /*  github: {
-    type: Boolean,
-    default: false,
-  },*/
+
   role: {
     type: String,
     profile: ["isAdmin", "user"],
     default: "user",
   },
   cart: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "carts",
   },
 });

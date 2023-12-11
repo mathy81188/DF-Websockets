@@ -18,6 +18,7 @@ class UsersManager extends Manager {
 
   async createOne(obj) {
     const response = await usersModel.create(obj);
+    console.log("Response from createOne:", response);
     return response;
   }
 }

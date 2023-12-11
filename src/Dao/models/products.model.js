@@ -14,6 +14,9 @@ const productsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  stock: {
+    type: Number,
+  },
 });
 
 productsSchema.plugin(mongoosePaginate);

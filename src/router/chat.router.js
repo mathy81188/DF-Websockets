@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { messageManager } from "../Dao/MongoDB/message";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roles } from "../constants.js";
 const router = Router();
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware([roles.USER]), async (req, res) => {
   const { user, message } = req.body;
   if (!user || !message) {
     return res.status(400).json({ message: "Some data is missing" });

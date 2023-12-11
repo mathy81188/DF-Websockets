@@ -23,9 +23,9 @@ async function findByProductId(req, res) {
   }
 }
 
-async function createProduct(res, req) {
-  const { title, description, price } = req.body;
-  if (!title || !description || !price) {
+async function createProduct(req, res) {
+  const { title, description, price, stock } = req.body;
+  if (!title || !description || !price || !stock) {
     return res.status(400).json({ message: "Some data is missing" });
   }
   try {

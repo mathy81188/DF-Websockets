@@ -23,6 +23,7 @@ socketClient.on("productCreated", (product) => {
             <td>${product.title}</td>
             <td>${product.description}</td>
             <td>${product.price}</td>
+            <td>${product.stock}</td>
             <button class="delete-button" data-product-id=${product.id}}>Delete</button>
            
         </tr>`;
@@ -46,6 +47,7 @@ socketClient.on("updateProducts", (product) => {
         <td>${product.title}</td>
         <td>${product.description}</td>
         <td>${product.price}</td>
+        <td>${product.stock}</td>
         <td>
           <button class="delete-button" data-product-id="${product.id}">Delete</button>
         </td>

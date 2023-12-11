@@ -1,4 +1,6 @@
 import { cartManager } from "../Dao/MongoDB/cart.js";
+import { productManager } from "../Dao/MongoDB/product.js";
+import { usersManager } from "../Dao/MongoDB/users.js";
 
 async function newCart(req, res) {
   try {
@@ -76,6 +78,20 @@ async function updateProductByIdFromCartById(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
+async function purchaseCart(req, res) {
+  try {
+    const { cid, id } = req.params;
+
+    const cart = await cartManager.purchaseCartById(cid);
+    const user = await usersManager.findById(id);
+
+    res.status(200).json({ message: "Cart purchase", cart });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export {
   newCart,
   findCart,
@@ -83,4 +99,5 @@ export {
   deleteProductByIdFromCart,
   updateCart,
   updateProductByIdFromCartById,
+  purchaseCart,
 };

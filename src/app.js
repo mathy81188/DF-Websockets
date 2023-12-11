@@ -15,6 +15,8 @@ import cartRouter from "./router/carts.router.js";
 import sessionRouter from "./router/sessions.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
+import messageRouter from "./router/messages.router.js";
+import { createProduct } from "./controllers/product.controller.js";
 
 const app = express();
 app.use(cookieParser());
@@ -28,7 +30,6 @@ const SESSION = config.sessionSecret;
 // ;
 app.use(
   session({
-    //  secret: "SESSIONSECRETKEY",
     secret: SESSION,
     cookie: {
       maxAge: 60 * 60 * 1000,
@@ -55,6 +56,7 @@ app.use("/api/carts", cartRouter);
 app.use("/api/chat", viewsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionRouter);
+app.use("/api/messages", messageRouter);
 
 //server
 const httpServer = app.listen(8080, () => {
