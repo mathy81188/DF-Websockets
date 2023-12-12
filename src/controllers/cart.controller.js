@@ -1,5 +1,5 @@
 import { cartManager } from "../Dao/MongoDB/cart.js";
-import { productManager } from "../Dao/MongoDB/product.js";
+
 import { usersManager } from "../Dao/MongoDB/users.js";
 
 async function newCart(req, res) {

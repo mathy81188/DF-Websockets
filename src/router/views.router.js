@@ -18,31 +18,14 @@ router.get("/realtimeproducts", async (req, res) => {
   res.render("realTimeProducts", { products });
 });
 
-//
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+router.get("/current", (req, res) => {
+  const currentUser = req.session;
+  if (!currentUser) {
+    return res.redirect("/login");
   }
 
-  res.redirect("/login");
-}
-//
-router.get("/current", ensureAuthenticated, (req, res) => {
-  /* console.log(req.session);
-  if (req.isAuthenticated()) {
-    const { email, first_name } = req.user;
-    res.render("current", { first_name, email });
-  } else {
-    res.redirect("/login");
-  }*/
-  // Obtén el usuario actual del middleware de autenticación (si lo tienes)
-  const currentUser = req.user;
-
-  // Crea un DTO con la información no sensible
   const userDTO = new UserDTO(currentUser);
 
-  // Envía el DTO como respuesta
-  // res.json(userDTO);
   res.render("current", { userDTO });
 });
 

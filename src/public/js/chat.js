@@ -9,11 +9,11 @@ let user;
 
 Swal.fire({
   title: "Welcome",
-  text: "What is your name",
+  text: "What is your email",
   input: "text",
   inputValidator: (value) => {
     if (!value) {
-      return "Name is required";
+      return "Email is required";
     }
   },
   confirmButtonText: "Enter",
@@ -23,28 +23,18 @@ Swal.fire({
   socketClient.emit("newUser", user);
 });
 
-socketClient.on("newUserBroadcast", (user) => {
-  Toastify({
-    text: `${user} connected`,
-    duration: 5000,
-    style: {
-      background: "linear-gradient(to right, #00b09b, #96c93d)",
-    },
-  }).showToast();
+socketClient.on("chat", (messages) => {
+  const chat = messages
+    .map((objMessage) => `<p>${objMessage.user}: ${objMessage.message}</p>`)
+    .join(" ");
+  divChat.innerHTML = chat;
 });
 
 form.onsubmit = (e) => {
   e.preventDefault();
   const infoMessage = {
-    name: user,
+    user: user,
     message: inputMessage.value,
   };
   socketClient.emit("message", infoMessage);
 };
-
-socketClient.on("chat", (messages) => {
-  const chat = messages
-    .map((objMessage) => `<p>${objMessage.name}: ${objMessage.message}</p>`)
-    .join(" ");
-  divChat.innerHTML = chat;
-});

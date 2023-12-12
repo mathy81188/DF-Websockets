@@ -1,14 +1,10 @@
 import passport from "passport";
 import { usersManager } from "./Dao/MongoDB/users.js";
-//import { Strategy as strategy } from "passport-local";
-import { Strategy as strategy } from "passport-local";
-//import { Strategy as githubStrategy } from "passport-github2";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-//import { compareData, hashData } from "./utils.js";
-import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
+//import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import config from "./config.js";
 import { cartManager } from "./Dao/MongoDB/cart.js";
-const jwt_secret = "jwt";
+//const jwt_secret = "jwt";
 
 passport.use(
   "google",
@@ -55,6 +51,7 @@ passport.use(
 passport.serializeUser((user, done) => {
   done(null, user._id);
 });
+
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await usersManager.findById(id);

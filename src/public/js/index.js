@@ -1,34 +1,38 @@
 console.log("probando");
+
 const socketClient = io();
 const form = document.getElementById("form");
 const inputTitle = document.getElementById("title");
 const inputDescription = document.getElementById("description");
 const inputPrice = document.getElementById("price");
+const inputStock = document.getElementById("stock");
 const table = document.getElementById("table");
+
+document.addEventListener("DOMContentLoaded", () => {
+  socketClient.emit("getProducts");
+});
+
 form.onsubmit = (e) => {
   e.preventDefault();
   const product = {
     title: inputTitle.value,
     description: inputDescription.value,
     price: inputPrice.value,
+    stock: inputStock.value,
   };
+
+  if (!product.title || !product.price) {
+    console.error("Title and price are required");
+    return;
+  }
+
   socketClient.emit("addProduct", product);
 };
 
 socketClient.on("productCreated", (product) => {
-  const row = `
-    <tr>
-    
-         
-            <td>${product.title}</td>
-            <td>${product.description}</td>
-            <td>${product.price}</td>
-            <td>${product.stock}</td>
-            <button class="delete-button" data-product-id=${product.id}}>Delete</button>
-           
-        </tr>`;
-  table.innerHTML += row;
+  addProductToTable(product);
 });
+
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("delete-button")) {
     e.preventDefault();
@@ -37,21 +41,30 @@ document.addEventListener("click", (e) => {
   }
 });
 
-socketClient.on("updateProducts", (product) => {
+socketClient.on("updateProducts", (products) => {
+  renderProducts(products);
+});
+
+socketClient.on("initialProducts", (products) => {
+  renderProducts(products);
+});
+
+function addProductToTable(product) {
+  const row = `
+    <tr>
+      <td>${product.title}</td>
+      <td>${product.description}</td>
+      <td>${product.price}</td>
+      <td>${product.stock}</td>
+      <td><button class="delete-button" data-product-id="${product._id}">Delete</button></td>
+    </tr>`;
+  table.innerHTML += row;
+}
+
+function renderProducts(products) {
   table.innerHTML = "";
 
-  product.forEach((product) => {
-    const row = `
-      <tr>
-        <td>${product.id}</td>
-        <td>${product.title}</td>
-        <td>${product.description}</td>
-        <td>${product.price}</td>
-        <td>${product.stock}</td>
-        <td>
-          <button class="delete-button" data-product-id="${product.id}">Delete</button>
-        </td>
-      </tr>`;
-    table.innerHTML += row;
+  products.forEach((product) => {
+    addProductToTable(product);
   });
-});
+}

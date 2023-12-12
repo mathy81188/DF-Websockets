@@ -12,7 +12,11 @@ async function login(req, res) {
     if (!userDB) {
       return res.status(401).json({ error: "This email does not exist" });
     }
+    req.session.email = email;
+    req.session.first_name = userDB.first_name;
+    req.session.role = userDB.role;
 
+    /*
     req.session["email"] = email;
     req.session["first_name"] = userDB.first_name;
     req.session["isAdmin"] = userDB.role === "isAdmin" ? true : false;
@@ -20,17 +24,13 @@ async function login(req, res) {
     // req.session["isAdmin"] =
     //   email === "adminCoder@coder.com" && password === "Cod3r123"
     //     ? true
-    //     : false;
+    //     : false; */
     const token = generateToken({
       email,
       first_name: userDB.first_name,
       role: userDB.role,
     });
-    //  res.status(200).json({ message: ` welcome ${userDB.first_name}`, token });
-    /* res
-      .status(200)
-      .cookie("token", token, { httpOnly: true })
-      .json({ message: ` welcome ${userDB.first_name}`, token });*/
+    res.redirect("/");
   } catch (error) {
     res.status(500).json({ error });
   }

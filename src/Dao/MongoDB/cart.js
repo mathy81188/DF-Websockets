@@ -100,7 +100,7 @@ class CartManager extends Manager {
       return console.log("Usuario no encontrado para el carrito");
     }
 
-    // Luego, puedes acceder al email con purchaserEmail.email
+    //  acceder al email con purchaserEmail.email
     const userEmail = purchaser.email;
     /*  const purchaser = await usersModel.findOne(id).select("email");
     if (purchaser.cart == cart) {
@@ -112,18 +112,17 @@ class CartManager extends Manager {
     let totalAmountSold = 0;
 
     for (const productInCart of cart.products) {
-      // Access the corresponding product in the cart array
       console.log("Product Info in Cart:", productInCart);
       const productoInfo = await productModel
         .findById(productInCart.product)
         .lean();
-      console.log("Full Product Info:", productoInfo); // Log the entire product information for inspection
+      console.log("Full Product Info:", productoInfo);
       if (!productoInfo) {
         console.log(
           `Insufficient stock for product with ID ${productInCart.product}`
         );
       }
-      // Check if productoInfo is null before accessing its properties
+      // Check si productoInfo es null
       if (productInCart.quantity <= productoInfo.stock) {
         // ticketProducts.push(productInCart);
         ticketProducts.push({
@@ -133,7 +132,6 @@ class CartManager extends Manager {
             title: productoInfo.title,
             description: productoInfo.description,
             price: productoInfo.price,
-            // Agrega cualquier otra información del producto que desees mostrar en el ticket
           },
         });
         totalAmountSold += productInCart.quantity * productoInfo.price;

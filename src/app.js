@@ -16,7 +16,6 @@ import sessionRouter from "./router/sessions.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 import messageRouter from "./router/messages.router.js";
-import { createProduct } from "./controllers/product.controller.js";
 
 const app = express();
 app.use(cookieParser());
@@ -25,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 
 //session
+
 const URI = config.mongouri;
 const SESSION = config.sessionSecret;
 // ;
@@ -63,7 +63,6 @@ const httpServer = app.listen(8080, () => {
   console.log("escuchando puerto 8080");
 });
 
-//socket
 const socketServer = new Server(httpServer);
 
 socketServer.on("connection", (socket) => {
@@ -71,26 +70,47 @@ socketServer.on("connection", (socket) => {
 
   socket.on("addProduct", async (product) => {
     const newProduct = await productManager.create(product);
+
     socket.emit("productCreated", newProduct);
+
+    const updatedProducts = await productManager.find({});
+    socketServer.emit("updateProducts", updatedProducts);
   });
 
   socket.on("deleteProduct", async (id) => {
-    const deletedProduct = await productManager.deleteOne(+id);
+    const deletedProduct = await productManager.deleteOne(id);
+
     socket.emit("productDeleted", deletedProduct);
 
     const updatedProducts = await productManager.find({});
-    socketServer.emit("updatedProducts", updatedProducts);
-  });
-});
-const messages = [];
-socketServer.on("connection", (socket) => {
-  socket.on("newUser", (user) => {
-    socket.broadcast.emit("newUserBroadcast", user);
+    socketServer.emit("updateProducts", updatedProducts);
   });
 
+  socket.on("getProducts", async () => {
+    const products = await productManager.find({});
+    socket.emit("initialProducts", products);
+  });
+});
+
+//MENSAJES
+const messages = [];
+
+socketServer.on("connection", (socket) => {
   socket.on("message", async (info) => {
-    await messageManager.create(info);
-    messages.push(info);
-    socketServer.emit("chat", messages);
+    const role = await messageManager.findByEmail(info.user);
+    console.log("User Role:", role);
+
+    if (role === "user") {
+      await messageManager.create(info);
+
+      const messageWithUser = { ...info, role };
+      messages.push(messageWithUser);
+
+      socketServer.emit("chat", messages);
+    } else {
+      console.log("Unauthorized user attempted to send a message");
+
+      socket.emit("unauthorizedAccess", { error: "Unauthorized user" });
+    }
   });
 });
