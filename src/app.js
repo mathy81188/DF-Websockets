@@ -16,6 +16,8 @@ import sessionRouter from "./router/sessions.router.js";
 import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 import messageRouter from "./router/messages.router.js";
+import { errorMidlleware } from "./middlewares/error.midlleware.js";
+import { generateMockingproducts } from "../faker.js";
 
 const app = express();
 app.use(cookieParser());
@@ -57,6 +59,17 @@ app.use("/api/chat", viewsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/api/messages", messageRouter);
+
+//Faker
+app.use("/mockingproducts", (req, res) => {
+  const products = [];
+  for (let index = 0; index < 100; index++) {
+    const product = generateMockingproducts();
+    products.push(product);
+  }
+  res.json(products);
+});
+app.use(errorMidlleware);
 
 //server
 const httpServer = app.listen(8080, () => {

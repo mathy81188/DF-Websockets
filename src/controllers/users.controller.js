@@ -1,44 +1,48 @@
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { cartManager } from "../Dao/MongoDB/cart.js";
-import { generateToken, hashData } from "../utils.js";
+import { compareData, generateToken, hashData } from "../utils.js";
 import UserDTO from "../dto/user.dto.js";
+import { messages } from "../errors/error.dictionary.js";
+import NotFound from "../errors/not-found.js";
 
-////////////CONTROLLER/////////////////
-async function login(req, res) {
+async function login(req, res, next) {
   const { email, password } = req.body;
-  //const { email } = req.body;
+
   try {
     const userDB = await usersManager.findByEmail(email);
     if (!userDB) {
-      return res.status(401).json({ error: "This email does not exist" });
+      throw NotFound.createErr("email");
+    }
+
+    const isPasswordValid = await compareData(password, userDB.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: messages.INVALID_PASSWORD });
     }
     req.session.email = email;
     req.session.first_name = userDB.first_name;
     req.session.role = userDB.role;
-
-    /*
-    req.session["email"] = email;
-    req.session["first_name"] = userDB.first_name;
-    req.session["isAdmin"] = userDB.role === "isAdmin" ? true : false;
-    res.redirect("/");
     // req.session["isAdmin"] =
     //   email === "adminCoder@coder.com" && password === "Cod3r123"
     //     ? true
-    //     : false; */
+    //     : false; *
     const token = generateToken({
       email,
       first_name: userDB.first_name,
       role: userDB.role,
     });
-    res.redirect("/");
+    res
+      .status(200)
+      .cookie("token", token, { httpOnly: true })
+      .json({ message: ` welcome ${userDB.first_name}`, token });
+    // res.redirect("/");
   } catch (error) {
-    res.status(500).json({ error });
+    next(error);
   }
 }
 async function signUp(req, res) {
   const { password, email, first_name, last_name } = req.body;
   if (!password || !email || !first_name || !last_name) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: messages.FIELDS_REQUIRED });
   }
 
   try {
@@ -94,7 +98,8 @@ async function getUserById(req, res) {
 
     res.status(200).json({ message: "user found", user });
   } catch (error) {
-    res.status(500).json({ error });
+    // res.status(404).json({ error: error.message });
+    res.status(200).json(messages.USER_NOT_FOUND);
   }
 }
 export { login, signUp, logOut, getUserById };

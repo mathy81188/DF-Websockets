@@ -1,5 +1,4 @@
 import Router from "express";
-
 import {
   deleteCart,
   deleteProductByIdFromCart,
@@ -28,11 +27,7 @@ router.delete(
 
 router.put("/:cid", authMiddleware([roles.USER]), updateCart);
 
-router.put(
-  "/:cid/product/:pid",
-  authMiddleware([roles.USER]),
-  updateProductByIdFromCartById
-);
+router.put("/:cid/product/:pid", updateProductByIdFromCartById);
 
 router.get("/:cid/purchase", purchaseCart);
 

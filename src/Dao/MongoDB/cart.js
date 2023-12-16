@@ -45,7 +45,6 @@ class CartManager extends Manager {
     console.log(cart);
 
     if (!cart) {
-      // Manejar el caso en que no se encuentra el carrito
       return console.log("Cart not found");
     }
 
@@ -54,20 +53,15 @@ class CartManager extends Manager {
     );
 
     if (productIndex === -1) {
-      // Si el producto no está en el carrito, agregarlo con una cantidad de 1
       cart.products.push({
         product: pid,
         quantity: 1,
       });
     } else {
-      // Si el producto ya está en el carrito, incrementar la cantidad
       cart.products[productIndex].quantity++;
     }
 
-    // Obtener información del producto
     const productInfo = await productModel.findById(pid);
-
-    // Verificar si hay suficiente stock
     if (
       productInfo &&
       cart.products[productIndex] &&
@@ -76,7 +70,6 @@ class CartManager extends Manager {
       return console.log("Not enough stock available");
     }
 
-    // Actualizar el carrito en la base de datos
     await cart.save();
 
     console.log("Product added to cart successfully");
@@ -96,17 +89,13 @@ class CartManager extends Manager {
     const purchaser = await usersModel.findOne({ cart: cid }).select("email");
 
     if (!purchaser) {
-      // Manejar el caso en que el usuario no tiene carrito
       return console.log("Usuario no encontrado para el carrito");
     }
 
-    //  acceder al email con purchaserEmail.email
     const userEmail = purchaser.email;
-    /*  const purchaser = await usersModel.findOne(id).select("email");
     if (purchaser.cart == cart) {
       return console.log("cart asociado a user", purchaser);
     }
-*/
     const ticketProducts = [];
 
     let totalAmountSold = 0;
@@ -122,9 +111,8 @@ class CartManager extends Manager {
           `Insufficient stock for product with ID ${productInCart.product}`
         );
       }
-      // Check si productoInfo es null
+
       if (productInCart.quantity <= productoInfo.stock) {
-        // ticketProducts.push(productInCart);
         ticketProducts.push({
           product: productInCart.product,
           quantity: productInCart.quantity,
@@ -155,7 +143,6 @@ class CartManager extends Manager {
       const uniqueCode = `${timestamp}-${random}`;
       return uniqueCode;
     }
-    // await cart.save();
 
     const newTicket = {
       code: generateUniqueCode(),

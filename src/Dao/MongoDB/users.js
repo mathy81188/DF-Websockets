@@ -1,3 +1,4 @@
+import NotFound from "../../errors/not-found.js";
 import { usersModel } from "../models/users.model.js";
 import Manager from "./manager.js";
 
