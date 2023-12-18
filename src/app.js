@@ -18,6 +18,7 @@ import { messageManager } from "./Dao/MongoDB/message.js";
 import messageRouter from "./router/messages.router.js";
 import { errorMidlleware } from "./middlewares/error.midlleware.js";
 import { generateMockingproducts } from "../faker.js";
+import { logger } from "./winston.js";
 
 const app = express();
 app.use(cookieParser());
@@ -60,6 +61,17 @@ app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/api/messages", messageRouter);
 
+//winston
+app.get("/loggerTest", (req, res) => {
+  //console.log("probando winston");
+  logger.debug("Este es un mensaje de debug");
+  logger.http("Este es un mensaje de http");
+  logger.info("Este es un mensaje de info");
+  logger.warning("Este es un mensaje de warning");
+  logger.error("Este es un mensaje de error");
+  logger.fatal("Este es un mensaje fatal");
+  res.send("probando winston logs");
+});
 //Faker
 app.use("/mockingproducts", (req, res) => {
   const products = [];
@@ -73,7 +85,8 @@ app.use(errorMidlleware);
 
 //server
 const httpServer = app.listen(8080, () => {
-  console.log("escuchando puerto 8080");
+  logger.debug("escuchando puerto 8080");
+  // console.log("escuchando puerto 8080");
 });
 
 const socketServer = new Server(httpServer);

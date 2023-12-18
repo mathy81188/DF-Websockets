@@ -10,6 +10,7 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
+const NODE_ENV = process.env.NODE_ENV;
 
 mongoose
   .connect(URI)
@@ -25,4 +26,5 @@ export default {
   sessionSecret: SESSION_SECRET,
   gmail_user: GMAIL_USER,
   gmail_password: GMAIL_PASSWORD,
+  node_env: NODE_ENV,
 };
