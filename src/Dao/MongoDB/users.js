@@ -1,4 +1,4 @@
-import NotFound from "../../errors/not-found.js";
+import { logger } from "../../winston.js";
 import { usersModel } from "../models/users.model.js";
 import Manager from "./manager.js";
 
@@ -13,13 +13,13 @@ class UsersManager extends Manager {
 
   async findByEmail(email) {
     const response = await usersModel.findOne({ email }).populate("cart");
-    console.log("findEmail", response);
+    logger.info("findEmail", response);
     return response;
   }
 
   async createOne(obj) {
     const response = await usersModel.create(obj);
-    console.log("Response from createOne:", response);
+    logger.info("Response from createOne:", response);
     return response;
   }
 }

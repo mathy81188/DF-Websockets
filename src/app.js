@@ -63,7 +63,7 @@ app.use("/api/messages", messageRouter);
 
 //winston
 app.get("/loggerTest", (req, res) => {
-  //console.log("probando winston");
+  console.log("probando winston");
   logger.debug("Este es un mensaje de debug");
   logger.http("Este es un mensaje de http");
   logger.info("Este es un mensaje de info");
@@ -86,13 +86,12 @@ app.use(errorMidlleware);
 //server
 const httpServer = app.listen(8080, () => {
   logger.debug("escuchando puerto 8080");
-  // console.log("escuchando puerto 8080");
 });
 
 const socketServer = new Server(httpServer);
 
 socketServer.on("connection", (socket) => {
-  console.log(`cliente conectado ${socket.id}`);
+  logger.info(`cliente conectado ${socket.id}`);
 
   socket.on("addProduct", async (product) => {
     const newProduct = await productManager.create(product);

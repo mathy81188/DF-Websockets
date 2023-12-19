@@ -1,3 +1,4 @@
+import { logger } from "../../winston.js";
 import { cartModel } from "../models/carts.model.js";
 import { productModel } from "../models/products.model.js";
 import { ticketsModel } from "../models/ticket.model.js";
@@ -21,10 +22,10 @@ class CartManager extends Manager {
 
   async deleteProductToCart(cid, pid) {
     const cart = await cartModel.findById(cid);
-    console.log(cart);
+    logger.info(cart);
 
     if (!cart) {
-      console.log("Cart not found");
+      logger.error("Cart not found");
       return;
     }
 
@@ -72,7 +73,7 @@ class CartManager extends Manager {
 
     await cart.save();
 
-    console.log("Product added to cart successfully");
+    logger.info("Product added to cart successfully");
   }
 
   async purchaseCartById(cid, id) {
