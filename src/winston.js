@@ -1,4 +1,5 @@
 import winston from "winston";
+//import { addColors } from "winston";
 import config from "./config.js";
 
 const myCustomLevels = {
@@ -13,37 +14,50 @@ const myCustomLevels = {
 
   colors: {
     debug: "blue",
-    http: "green",
-    info: "cyan",
-    warning: "yellow",
-    error: "red",
-    fatal: "magenta",
+    http: "cyan",
+    info: "green",
+    warning: "grey",
+    error: "magenta",
+    fatal: "red",
   },
 };
 
-const developmentLogger = winston.createLogger({
-  levels: myCustomLevels.levels,
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.simple()
-  ),
-  transports: [
-    new winston.transports.Console({
-      level: "debug",
-    }),
-  ],
-});
+winston.addColors(myCustomLevels.colors);
+export let logger;
 
-// Configuración del logger para producción
-const productionLogger = winston.createLogger({
-  levels: myCustomLevels.levels,
-  transports: [
-    new winston.transports.Console({ level: "info" }),
-    new winston.transports.File({ filename: "errors.log", level: "error" }),
-  ],
-});
-
-const logger =
-  config.node_env === "production" ? productionLogger : developmentLogger;
-
-export { logger };
+if (config.node_env !== "production") {
+  logger = winston.createLogger({
+    levels: myCustomLevels.levels,
+    transports: [
+      new winston.transports.Console({
+        level: "debug",
+        format: winston.format.combine(
+          winston.format.colorize({ all: true }),
+          winston.format.simple()
+        ),
+      }),
+    ],
+  });
+} else {
+  logger = winston.createLogger({
+    levels: myCustomLevels.levels,
+    transports: [
+      new winston.transports.Console({
+        level: "info",
+        format: winston.format.combine(
+          winston.format.colorize({ all: true }),
+          winston.format.timestamp(),
+          winston.format.simple()
+        ),
+      }),
+      new winston.transports.File({
+        filename: "errors.log",
+        level: "error",
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.json() // Formato JSON para el archivo de errores
+        ),
+      }),
+    ],
+  });
+}

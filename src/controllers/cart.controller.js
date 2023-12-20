@@ -1,13 +1,18 @@
 import { cartManager } from "../Dao/MongoDB/cart.js";
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { messages } from "../errors/error.dictionary.js";
+import { logger } from "../winston.js";
 
 async function newCart(req, res) {
   try {
     const newCart = await cartManager.createCart(req.body);
+    logger.info("Nuevo carrito creado con éxito", { cart: newCart });
     res.status(200).json({ message: "Carrito creado con exito ", newCart });
     return newCart;
   } catch (error) {
+    logger.error("Error al intentar crear un nuevo carrito", {
+      error: error.message,
+    });
     res.status(500).json({ message: error.message });
   }
 }
@@ -16,8 +21,12 @@ async function findCart(req, res) {
   try {
     const { cid } = req.params;
     const cart = await cartManager.findCartById(cid);
+    logger.debug("Carrito encontrado", { cartId: cid, cart });
     res.status(200).json({ message: "Cart found", cart });
   } catch (error) {
+    logger.error("Error al intentar encontrar un carrito", {
+      error: error.message,
+    });
     res.status(500).json({ message: messages.CART_NOT_FOUND });
   }
 }
@@ -26,8 +35,12 @@ async function deleteCart(req, res) {
   try {
     const { cid } = req.params;
     const cart = await cartManager.deleteOne(cid);
+    logger.info("Carrito eliminado con éxito", { cartId: cid });
     res.status(200).json({ message: "Cart deleted" });
   } catch (error) {
+    logger.error("Error al intentar eliminar un carrito", {
+      error: error.message,
+    });
     res.status(500).json({ message: messages.CART_NOT_FOUND });
   }
 }
@@ -71,8 +84,12 @@ async function purchaseCart(req, res) {
     const { cid, id } = req.params;
     const cart = await cartManager.purchaseCartById(cid);
     const user = await usersManager.findById(id);
+    logger.info("Carrito comprado con éxito", { cartId: cid, userId: id });
     res.status(200).json({ message: "Cart purchase", cart });
   } catch (error) {
+    logger.error("Error al intentar comprar un carrito", {
+      error: error.message,
+    });
     res.status(500).json({ message: error.message });
   }
 }

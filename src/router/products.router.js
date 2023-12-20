@@ -21,14 +21,5 @@ router.post("/", authMiddleware([roles.ADMIN]), createProduct);
 router.delete("/:pid", deleteProduct);
 
 router.put("/:pid", updateProduct);
-/*
-router.get("/mockingproducts", (req, res) => {
-  const products = [];
-  for (let index = 0; index < 5; index++) {
-    const product = generateMockingproducts();
-    products.push(product);
-  }
-  res.json(products);
-});
-*/
+
 export default router;

@@ -1,4 +1,5 @@
 import Jwt from "jsonwebtoken";
+import { logger } from "../winston";
 const jwt_secret = "jwt";
 
 export const jwtValidation = (req, res, next) => {
@@ -7,7 +8,7 @@ export const jwtValidation = (req, res, next) => {
     const token = header.split(" ")[1];
     const responseToken = Jwt.verify(token, jwt_secret);
     req.user = responseToken;
-    console.log("resToken", responseToken);
+    logger.info("resToken", responseToken);
     next();
   } catch (error) {
     res.status(500).json({ error });

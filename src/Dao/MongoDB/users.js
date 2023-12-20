@@ -13,13 +13,11 @@ class UsersManager extends Manager {
 
   async findByEmail(email) {
     const response = await usersModel.findOne({ email }).populate("cart");
-    logger.info("findEmail", response);
     return response;
   }
 
   async createOne(obj) {
     const response = await usersModel.create(obj);
-    logger.info("Response from createOne:", response);
     return response;
   }
 }

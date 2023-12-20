@@ -1,4 +1,6 @@
-console.log("probando");
+import { logger } from "../../winston";
+
+logger.info("probando");
 
 const socketClient = io();
 const form = document.getElementById("form");
@@ -22,7 +24,7 @@ form.onsubmit = (e) => {
   };
 
   if (!product.title || !product.price) {
-    console.error("Title and price are required");
+    logger.error("Title and price are required");
     return;
   }
 

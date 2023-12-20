@@ -30,12 +30,12 @@ class CartManager extends Manager {
     }
 
     let productIndex = cart.products.findIndex((product) => product.id == +pid);
-    console.log(productIndex);
+    logger.info(productIndex);
 
     if (productIndex === -1) {
       cart.products.splice(productIndex);
     } else {
-      console.log("Product not found in the cart");
+      logger.error("Product not found in the cart");
       return;
     }
 
@@ -43,10 +43,10 @@ class CartManager extends Manager {
   }
   async updateProductFromCart(cid, pid) {
     let cart = await cartModel.findById(cid);
-    console.log(cart);
+    logger.info(cart);
 
     if (!cart) {
-      return console.log("Cart not found");
+      return logger.error("Cart not found");
     }
 
     let productIndex = cart.products.findIndex((product) =>
@@ -68,7 +68,7 @@ class CartManager extends Manager {
       cart.products[productIndex] &&
       cart.products[productIndex].quantity > productInfo.stock
     ) {
-      return console.log("Not enough stock available");
+      return logger.info("Not enough stock available");
     }
 
     await cart.save();
@@ -78,10 +78,10 @@ class CartManager extends Manager {
 
   async purchaseCartById(cid, id) {
     let cart = await cartModel.findById(cid);
-    console.log(cart);
+    logger.info(cart);
 
     if (!cart) {
-      return console.log("Cart not found");
+      return logger.error("Cart not found");
     }
 
     if (cart.products.length === 0) {
@@ -90,25 +90,25 @@ class CartManager extends Manager {
     const purchaser = await usersModel.findOne({ cart: cid }).select("email");
 
     if (!purchaser) {
-      return console.log("Usuario no encontrado para el carrito");
+      return logger.error("Usuario no encontrado para el carrito");
     }
 
     const userEmail = purchaser.email;
     if (purchaser.cart == cart) {
-      return console.log("cart asociado a user", purchaser);
+      return logger.info("cart asociado a user", purchaser);
     }
     const ticketProducts = [];
 
     let totalAmountSold = 0;
 
     for (const productInCart of cart.products) {
-      console.log("Product Info in Cart:", productInCart);
+      logger.info("Product Info in Cart:", productInCart);
       const productoInfo = await productModel
         .findById(productInCart.product)
         .lean();
-      console.log("Full Product Info:", productoInfo);
+      logger.info("Full Product Info:", productoInfo);
       if (!productoInfo) {
-        console.log(
+        logger.error(
           `Insufficient stock for product with ID ${productInCart.product}`
         );
       }
@@ -124,14 +124,14 @@ class CartManager extends Manager {
           },
         });
         totalAmountSold += productInCart.quantity * productoInfo.price;
-        console.log(`Monto total: ${totalAmountSold}`);
+        logger.info(`Monto total: ${totalAmountSold}`);
 
         await productModel.updateOne(
           { _id: productInCart.product },
           { $inc: { stock: -productInCart.quantity } }
         );
       } else {
-        console.log(
+        logger.error(
           `Insufficient stock for product with ID ${productInCart.product}`
         );
       }

@@ -4,6 +4,7 @@ import { compareData, generateToken, hashData } from "../utils.js";
 import UserDTO from "../dto/user.dto.js";
 import { messages } from "../errors/error.dictionary.js";
 import NotFound from "../errors/not-found.js";
+import { logger } from "../winston.js";
 
 async function login(req, res, next) {
   const { email, password } = req.body;
@@ -47,7 +48,7 @@ async function signUp(req, res) {
 
   try {
     const userDB = await usersManager.findByEmail(email);
-    console.log("userdb", userDB);
+    logger.info("userdb", userDB);
     if (userDB) {
       return res.status(401).json({ message: "This email exists" });
     }
@@ -73,12 +74,12 @@ async function signUp(req, res) {
       cart: cart._id,
     };
 
-    console.log("createdUser", createdUserResponse);
+    logger.info("createdUser", createdUserResponse);
     res
       .status(200)
       .json({ message: "User created", createdUser: createdUserResponse });
   } catch (error) {
-    console.error("Error during signUp:", error);
+    logger.error("Error during signUp:", error);
     res.status(500).json({ error });
   }
 }
