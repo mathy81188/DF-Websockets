@@ -9,7 +9,7 @@ import {
   updateProductByIdFromCartById,
 } from "../controllers/cart.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { roles } from "../constants.js";
+import { roles } from "../utils/constants.js";
 
 const router = Router();
 

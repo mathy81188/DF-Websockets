@@ -7,8 +7,10 @@ import { engine } from "express-handlebars";
 import viewsRouter from "./router/views.router.js";
 import { __dirname } from "./utils.js";
 import { Server } from "socket.io";
-import config from "./config.js";
-import "./passport.js";
+import config from "./config/config.js";
+import "./utils/passport.js";
+import { generateMockingproducts } from "./utils/faker.js";
+import { logger } from "./utils/winston.js";
 import usersRouter from "./router/users.router.js";
 import productsRouter from "./router/products.router.js";
 import cartRouter from "./router/carts.router.js";
@@ -17,8 +19,6 @@ import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 import messageRouter from "./router/messages.router.js";
 import { errorMidlleware } from "./middlewares/error.midlleware.js";
-import { generateMockingproducts } from "../faker.js";
-import { logger } from "./winston.js";
 
 const app = express();
 app.use(cookieParser());
@@ -48,6 +48,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //handlebars
+
 app.engine("handlebars", engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");

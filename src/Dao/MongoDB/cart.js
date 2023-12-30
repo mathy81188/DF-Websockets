@@ -1,8 +1,8 @@
-import { logger } from "../../winston.js";
-import { cartModel } from "../models/carts.model.js";
-import { productModel } from "../models/products.model.js";
-import { ticketsModel } from "../models/ticket.model.js";
-import { usersModel } from "../models/users.model.js";
+import { logger } from "../../utils/winston.js";
+import { cartModel } from "../../models/carts.model.js";
+import { productModel } from "../../models/products.model.js";
+import { ticketsModel } from "../../models/ticket.model.js";
+import { usersModel } from "../../models/users.model.js";
 
 import Manager from "./manager.js";
 

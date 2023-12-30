@@ -1,6 +1,5 @@
 import winston from "winston";
-//import { addColors } from "winston";
-import config from "./config.js";
+import config from "../config/config.js";
 
 const myCustomLevels = {
   levels: {
@@ -55,7 +54,7 @@ if (config.node_env !== "production") {
         level: "error",
         format: winston.format.combine(
           winston.format.timestamp(),
-          winston.format.json() // Formato JSON para el archivo de errores
+          winston.format.json()
         ),
       }),
     ],

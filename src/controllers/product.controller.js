@@ -1,6 +1,6 @@
 import { productManager } from "../Dao/MongoDB/product.js";
 import { messages } from "../errors/error.dictionary.js";
-import { logger } from "../winston.js";
+import { logger } from "../utils/winston.js";
 
 async function getAllProducts(req, res) {
   try {

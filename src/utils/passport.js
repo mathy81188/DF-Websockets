@@ -1,9 +1,9 @@
 import passport from "passport";
-import { usersManager } from "./Dao/MongoDB/users.js";
+import { usersManager } from "../Dao/MongoDB/users.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 //import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
-import config from "./config.js";
-import { cartManager } from "./Dao/MongoDB/cart.js";
+import config from "../config/config.js";
+import { cartManager } from "../Dao/MongoDB/cart.js";
 //const jwt_secret = "jwt";
 
 passport.use(

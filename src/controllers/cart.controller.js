@@ -1,7 +1,7 @@
 import { cartManager } from "../Dao/MongoDB/cart.js";
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { messages } from "../errors/error.dictionary.js";
-import { logger } from "../winston.js";
+import { logger } from "../utils/winston.js";
 
 async function newCart(req, res) {
   try {

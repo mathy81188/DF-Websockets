@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { transporter } from "../nodamailer.js";
+import { transporter } from "../utils/nodamailer.js";
 
 const router = Router();
 

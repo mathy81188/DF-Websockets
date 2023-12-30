@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generateMockingproducts } from "../../faker.js";
+import { generateMockingproducts } from "../utils/faker.js";
 import {
   getAllProducts,
   findByProductId,
@@ -8,7 +8,7 @@ import {
   updateProduct,
 } from "../controllers/product.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { roles } from "../constants.js";
+import { roles } from "../utils/constants.js";
 
 const router = Router();
 

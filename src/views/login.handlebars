@@ -5,6 +5,13 @@
   password:
   <input type="password" name="password" id="password" />
   <input type="submit" value="LOGIN" />
-
 </form>
 <button onClick="location.href='/api/sessions/auth/google'">google</button>
+<p>
+  Olvido su contraseña?
+  <a
+    href="/api/users/regenerate-password-reset/{{token}}"
+    id="resetPasswordLink"
+  >Genere una nueva acá</a>
+</p>
+<script src="/js/login.js"></script>

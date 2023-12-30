@@ -4,7 +4,8 @@ import { compareData, generateToken, hashData } from "../utils.js";
 import UserDTO from "../dto/user.dto.js";
 import { messages } from "../errors/error.dictionary.js";
 import NotFound from "../errors/not-found.js";
-import { logger } from "../winston.js";
+import { logger } from "../utils/winston.js";
+import bcrypt from "bcrypt";
 
 async function login(req, res, next) {
   const { email, password } = req.body;
@@ -25,7 +26,7 @@ async function login(req, res, next) {
     // req.session["isAdmin"] =
     //   email === "adminCoder@coder.com" && password === "Cod3r123"
     //     ? true
-    //     : false; *
+    //     : false;
     const token = generateToken({
       email,
       first_name: userDB.first_name,
@@ -40,6 +41,7 @@ async function login(req, res, next) {
     next(error);
   }
 }
+
 async function signUp(req, res) {
   const { password, email, first_name, last_name } = req.body;
   if (!password || !email || !first_name || !last_name) {
@@ -99,8 +101,94 @@ async function getUserById(req, res) {
 
     res.status(200).json({ message: "user found", user });
   } catch (error) {
-    // res.status(404).json({ error: error.message });
-    res.status(200).json(messages.USER_NOT_FOUND);
+    res.status(404).json({ error: error.message });
+    // res.status(200).json(messages.USER_NOT_FOUND);
   }
 }
-export { login, signUp, logOut, getUserById };
+
+async function regeneratePasswordReset(req, res, next) {
+  const { email, token } = req.params;
+
+  console.log("Token received:", token);
+
+  try {
+    const userDB = await usersManager.findByResetToken(token);
+
+    console.log("User found in DB:", userDB);
+
+    res.render("regenerate-password-reset", { token });
+  } catch (error) {
+    console.error("Error in resetPasswordPage:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+async function requestPasswordRecovery(req, res, next) {
+  const { email } = req.body;
+
+  try {
+    await usersManager.requestPasswordReset(email);
+
+    return res.json({ message: "Password recovery email sent successfully" });
+  } catch (error) {
+    console.error("Error requesting password recovery:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+async function resetPasswordPage(req, res, next) {
+  const { token } = req.params;
+
+  console.log("Token received:", token); // Agrega esta línea para imprimir el token
+
+  try {
+    const userDB = await usersManager.findByResetToken(token);
+
+    console.log("User found in DB:", userDB); // Agrega esta línea para imprimir el usuario encontrado
+
+    // Renderizar la vista de restablecimiento de contraseña con el token
+    res.render("reset-password", { token });
+  } catch (error) {
+    console.error("Error in resetPasswordPage:", error);
+    // Manejar el error, por ejemplo, redirigir a una página de error
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+async function resetPassword(req, res, next) {
+  const { token, newPassword } = req.body;
+  console.log("Request body:", req.body);
+  try {
+    const userDB = await usersManager.findByResetToken(token);
+
+    if (!userDB || userDB.resetTokenExpiration < new Date()) {
+      console.log("Invalid or expired token");
+      return res.render("regenerate-password-reset");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar la contraseña del usuario en la base de datos
+    await usersManager.updatePassword(userDB.email, hashedPassword, null, null);
+
+    // Limpiar el token de reset en la base de datos
+    await usersManager.clearResetToken(userDB.email);
+
+    // Redirigir a la página de éxito o inicio de sesión
+    return res.redirect("/api/users/logout");
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export {
+  login,
+  signUp,
+  logOut,
+  getUserById,
+  resetPasswordPage,
+  regeneratePasswordReset,
+  requestPasswordRecovery,
+  resetPassword,
+};

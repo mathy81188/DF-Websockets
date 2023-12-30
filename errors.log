@@ -2,3 +2,4 @@
 {"level":"error","message":"Este es un mensaje de error","timestamp":"2023-12-20T04:02:42.222Z"}
 {"level":"error","message":"Este es un mensaje de error","timestamp":"2023-12-20T04:03:03.865Z"}
 {"level":"fatal","message":"Este es un mensaje fatal","timestamp":"2023-12-20T04:03:03.873Z"}
+{"level":"error","message":"Error al acceder ala informacion del producto","timestamp":"2023-12-28T00:57:32.304Z"}
