@@ -3,3 +3,17 @@
 {"level":"error","message":"Este es un mensaje de error","timestamp":"2023-12-20T04:03:03.865Z"}
 {"level":"fatal","message":"Este es un mensaje fatal","timestamp":"2023-12-20T04:03:03.873Z"}
 {"level":"error","message":"Error al acceder ala informacion del producto","timestamp":"2023-12-28T00:57:32.304Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:20:18.439Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:26:29.721Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:27:23.134Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:27:26.500Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:51:53.077Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T00:51:54.696Z"}
+{"level":"error","message":"Ha courrido un error al crear este producto","timestamp":"2023-12-31T00:55:14.880Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:33:34.438Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:42:11.207Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:43:55.955Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:49:42.594Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:54:18.366Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T01:55:03.111Z"}
+{"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2023-12-31T02:15:30.475Z"}

@@ -182,6 +182,31 @@ async function resetPassword(req, res, next) {
   }
 }
 
+async function togglePremiumStatus(req, res) {
+  const { uid } = req.params;
+
+  try {
+    const user = await userModel.findById(uid);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Cambiar el estado de premium
+    user.isPremium = !user.isPremium;
+
+    // Guardar los cambios
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Premium status updated", isPremium: user.isPremium });
+  } catch (error) {
+    console.error("Error updating premium status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export {
   login,
   signUp,
@@ -191,4 +216,5 @@ export {
   regeneratePasswordReset,
   requestPasswordRecovery,
   resetPassword,
+  togglePremiumStatus,
 };

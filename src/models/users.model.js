@@ -33,7 +33,7 @@ const usersSchema = new mongoose.Schema({
 
   role: {
     type: String,
-    profile: ["isAdmin", "user"],
+    profile: ["isAdmin", "user", "premium"],
     default: "user",
   },
   cart: {

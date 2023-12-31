@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { generateMockingproducts } from "../utils/faker.js";
 import {
   getAllProducts,
   findByProductId,
@@ -16,9 +15,13 @@ router.get("/", getAllProducts);
 
 router.get("/:pid", findByProductId);
 
-router.post("/", authMiddleware([roles.ADMIN]), createProduct);
+router.post("/", authMiddleware([roles.ADMIN, roles.USER]), createProduct);
 
-router.delete("/:pid", deleteProduct);
+router.delete(
+  "/:pid",
+  authMiddleware([roles.ADMIN, roles.PREMIUM]),
+  deleteProduct
+);
 
 router.put("/:pid", updateProduct);
 

@@ -7,6 +7,7 @@ import {
   requestPasswordRecovery,
   resetPasswordPage,
   resetPassword,
+  togglePremiumStatus,
   signUp,
 } from "../controllers/users.controller.js";
 
@@ -23,6 +24,6 @@ router.get("/reset-password/:token", resetPasswordPage);
 router.post("/reset-password/:token", requestPasswordRecovery);
 
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
-
+router.get("/api/users/premium/:uid", togglePremiumStatus);
 router.get("/:id", getUserById);
 export default router;

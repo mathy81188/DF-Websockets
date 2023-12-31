@@ -82,7 +82,7 @@ app.use("/mockingproducts", (req, res) => {
   }
   res.json(products);
 });
-app.use(errorMidlleware);
+//app.use(errorMidlleware);
 
 //server
 const httpServer = app.listen(8080, () => {

@@ -1,10 +1,8 @@
 import passport from "passport";
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-//import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import config from "../config/config.js";
 import { cartManager } from "../Dao/MongoDB/cart.js";
-//const jwt_secret = "jwt";
 
 passport.use(
   "google",
@@ -55,6 +53,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await usersManager.findById(id);
+
     done(null, user);
   } catch (error) {
     done(error);
