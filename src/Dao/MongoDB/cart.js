@@ -42,10 +42,62 @@ class CartManager extends Manager {
     await cart.save();
   }
 
-  //original y funcional
+  async updateProductFromCart(cid, pid) {
+    try {
+      let cart = await cartModel.findById(cid);
+      console.log("cart", cart);
+
+      if (!cart) {
+        return logger.error("Cart not found");
+      }
+
+      let productIndex = cart.products.findIndex((product) =>
+        product.product.equals(pid)
+      );
+
+      const productInfo = await productModel.findById(pid);
+      console.log("productInfo before", productInfo);
+
+      // Chequear productInfo si existe y si tiene stock
+      if (!productInfo || productInfo.stock <= 0) {
+        return console.log("Product not found or out of stock");
+      }
+
+      // controlar si el poducto xiste en el carrito
+      if (productIndex === -1) {
+        // agregar producto al carrito
+        cart.products.push({
+          product: pid,
+          quantity: 1,
+        });
+      } else {
+        // Incrementa the quantity en cart
+        cart.products[productIndex].quantity++;
+      }
+
+      // Update product stock
+      productInfo.stock--;
+
+      // Actualizar stock del producto en la base de datos
+      await productInfo.save();
+
+      console.log("productInfo after", productInfo);
+
+      // Actualizar el carrito en la base de datos
+      await cart.save();
+
+      console.log("Product added to cart successfully");
+    } catch (error) {
+      console.error("Error updating product and cart:", error);
+      // Handle the error appropriately
+    }
+  }
+
+  /* //original
   async updateProductFromCart(cid, pid) {
     let cart = await cartModel.findById(cid);
     // logger.info(cart);
+    console.log("cart", cart);
 
     if (!cart) {
       return logger.error("Cart not found");
@@ -64,8 +116,10 @@ class CartManager extends Manager {
       cart.products[productIndex].quantity++;
     }
 
+    // Verificar si hay suficiente stock
+    //no resta el stock
     const productInfo = await productModel.findById(pid);
-    console.log("prodctinfo stock", productInfo);
+    console.log("productInfo before", productInfo);
     // Verificar si hay suficiente stock
     if (
       productInfo &&
@@ -75,12 +129,13 @@ class CartManager extends Manager {
       return console.log("Not enough stock available");
     }
 
+    console.log("productInfo after", productInfo);
     // Actualizar el carrito en la base de datos
     await cart.save();
 
     console.log("Product added to cart successfully");
   }
-
+*/
   async purchaseCartById(cid, id) {
     let cart = await cartModel.findById(cid);
     logger.info(cart);

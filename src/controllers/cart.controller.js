@@ -1,4 +1,5 @@
 import { cartManager } from "../Dao/MongoDB/cart.js";
+import { productManager } from "../Dao/MongoDB/product.js";
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { messages } from "../errors/error.dictionary.js";
 import { logger } from "../utils/winston.js";
@@ -72,8 +73,28 @@ async function updateCart(req, res) {
 async function updateProductByIdFromCartById(req, res) {
   try {
     const { cid, pid } = req.params;
+    const userRole = req.session.role;
+    console.log("userRole", userRole);
+
+    // Obtener información completa del producto
+    const productInfo = await productManager.findById(pid);
+
+    if (!productInfo) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Verificar el rol y el propietario del producto
+    if (userRole === "premium" && productInfo.owner !== req.session.email) {
+      return res.status(403).json({
+        message:
+          "Premium users cannot add products owned by others to the cart",
+      });
+    }
+
+    // Llamar a la función de manager solo si la validación es exitosa
     const cart = await cartManager.updateProductFromCart(cid, pid);
-    res.status(200).json({ message: "Product edited", cart });
+
+    return res.status(200).json({ message: "Product edited", cart });
   } catch (error) {
     res.status(500).json({ message: "Producto sin stock" });
   }

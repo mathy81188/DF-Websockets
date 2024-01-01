@@ -101,7 +101,7 @@ async function updateProduct(req, res) {
     if (response === -1) {
       res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
     } else {
-      res.status(200).json({ message: "Poduct updated" });
+      res.status(200).json({ message: "Product updated" });
     }
   } catch (error) {
     logger.error("Ha courrido un error al intentar editar este producto");
