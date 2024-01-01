@@ -18,10 +18,14 @@ const productsSchema = new mongoose.Schema({
     type: Number,
   },
   owner: {
+    type: String,
+    default: "admin",
+  },
+ /* owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
     default: "admin",
-  },
+  },*/
 });
 
 productsSchema.plugin(mongoosePaginate);

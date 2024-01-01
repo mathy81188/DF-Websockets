@@ -45,7 +45,7 @@ async function createProduct(req, res) {
       description,
       price,
       stock,
-      owner: user._id,
+      owner: user.email,
     });
     logger.debug("Producto creado con éxito", newProd);
     res.status(200).json({ message: "Product created", prod: newProd });
@@ -54,51 +54,46 @@ async function createProduct(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
-
 async function deleteProduct(req, res) {
   const { pid } = req.params;
+  const sesion = req.session;
+  console.log("sesion", sesion);
 
   try {
-    // Obtener el producto y su owner
     const product = await productManager.findById(pid);
-    const owner = product ? product.owner : null;
+    console.log("product", product);
 
-    // Verificar si el usuario es admin o el owner del producto
-    if (req.session.role === "admin" || owner === req.session.email) {
+    if (!product) {
+      return res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
+    }
+
+    // Verificar si el usuario es admin o el propietario del producto
+    if (
+      req.session.role === "admin" ||
+      (req.session.role === "premium" && product.owner === req.session.email)
+    ) {
       const response = await productManager.deleteOne(pid);
+      console.log("response", response);
+
       if (response === -1) {
-        res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
+        return res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
       } else {
-        res.status(200).json({ message: "Product deleted" });
+        return res.status(200).json({ message: "Product deleted" });
       }
     } else {
-      throw Forbidden.createErr();
+      return res
+        .status(403)
+        .json({ message: "No tienes permisos para realizar esta acción" });
     }
   } catch (error) {
     logger.error(
       "Ha ocurrido un error al intentar eliminar este producto:",
       error
     );
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 }
-/* //original y funcional 
-async function deleteProduct(req, res) {
-  const { pid } = req.params;
-  logger.info(pid);
-  try {
-    const response = await productManager.deleteOne(pid);
-    if (response === -1) {
-      res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
-    } else {
-      res.status(200).json({ message: "Product deleted" });
-    }
-  } catch (error) {
-    logger.error("Ha courrido un error al intentar eliminar este producto");
-    res.status(500).json({ message: error });
-  }
-}
-*/
+
 async function updateProduct(req, res) {
   const { pid } = req.params;
   try {

@@ -6,6 +6,7 @@ import { messages } from "../errors/error.dictionary.js";
 import NotFound from "../errors/not-found.js";
 import { logger } from "../utils/winston.js";
 import bcrypt from "bcrypt";
+import { roles } from "../utils/constants.js";
 
 async function login(req, res, next) {
   const { email, password } = req.body;
@@ -184,21 +185,24 @@ async function resetPassword(req, res, next) {
 
 async function togglePremiumStatus(req, res) {
   const { uid } = req.params;
+  console.log("uid", uid);
 
   try {
-    const user = await userModel.findById(uid);
-
+    const user = await usersManager.findById(uid);
+    console.log("user", user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // Cambiar el estado de premium
-    user.isPremium = !user.isPremium;
+    user.role = user.role === roles.USER ? roles.PREMIUM : roles.USER;
+    console.log("Premium status updated:", user.role);
 
     // Guardar los cambios
     await user.save();
+    console.log("User saved:", user);
 
-    res
+    return res
       .status(200)
       .json({ message: "Premium status updated", isPremium: user.isPremium });
   } catch (error) {

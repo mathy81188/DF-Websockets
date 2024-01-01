@@ -42,7 +42,7 @@ app.use(
     }),
   })
 );
-
+app.use(errorMidlleware);
 //passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -82,7 +82,6 @@ app.use("/mockingproducts", (req, res) => {
   }
   res.json(products);
 });
-//app.use(errorMidlleware);
 
 //server
 const httpServer = app.listen(8080, () => {

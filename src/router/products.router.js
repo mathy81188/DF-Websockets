@@ -15,7 +15,11 @@ router.get("/", getAllProducts);
 
 router.get("/:pid", findByProductId);
 
-router.post("/", authMiddleware([roles.ADMIN, roles.USER]), createProduct);
+router.post(
+  "/",
+  authMiddleware([roles.ADMIN, roles.USER, roles.PREMIUM]),
+  createProduct
+);
 
 router.delete(
   "/:pid",

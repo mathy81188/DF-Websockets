@@ -75,7 +75,7 @@ async function updateProductByIdFromCartById(req, res) {
     const cart = await cartManager.updateProductFromCart(cid, pid);
     res.status(200).json({ message: "Product edited", cart });
   } catch (error) {
-    res.status(500).json({ message: messages.PRODUCT_NOT_FOUND });
+    res.status(500).json({ message: "Producto sin stock" });
   }
 }
 

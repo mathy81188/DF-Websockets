@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roles } from "../utils/constants.js";
 import {
   getUserById,
   logOut,
@@ -24,6 +26,11 @@ router.get("/reset-password/:token", resetPasswordPage);
 router.post("/reset-password/:token", requestPasswordRecovery);
 
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
-router.get("/api/users/premium/:uid", togglePremiumStatus);
 router.get("/:id", getUserById);
+router.put(
+  "/premium/:uid",
+  // authMiddleware([roles.ADMIN]),
+  togglePremiumStatus
+);
+
 export default router;

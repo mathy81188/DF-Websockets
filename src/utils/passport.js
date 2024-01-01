@@ -21,6 +21,8 @@ passport.use(
 
         //login
         if (user) {
+          req.session.email = user.email;
+          req.session.role = user.role;
           if (user.google) {
             return done(null, user);
           }
@@ -37,6 +39,8 @@ passport.use(
             google: true,
           };
           const createdUser = await usersManager.createOne(infolUser);
+          req.session.email = user.email;
+          req.session.role = user.role;
           done(null, createdUser);
         }
       } catch (error) {

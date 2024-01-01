@@ -41,9 +41,11 @@ class CartManager extends Manager {
 
     await cart.save();
   }
+
+  //original y funcional
   async updateProductFromCart(cid, pid) {
     let cart = await cartModel.findById(cid);
-    logger.info(cart);
+    // logger.info(cart);
 
     if (!cart) {
       return logger.error("Cart not found");
@@ -63,17 +65,20 @@ class CartManager extends Manager {
     }
 
     const productInfo = await productModel.findById(pid);
+    console.log("prodctinfo stock", productInfo);
+    // Verificar si hay suficiente stock
     if (
       productInfo &&
       cart.products[productIndex] &&
       cart.products[productIndex].quantity > productInfo.stock
     ) {
-      return logger.info("Not enough stock available");
+      return console.log("Not enough stock available");
     }
 
+    // Actualizar el carrito en la base de datos
     await cart.save();
 
-    logger.info("Product added to cart successfully");
+    console.log("Product added to cart successfully");
   }
 
   async purchaseCartById(cid, id) {
