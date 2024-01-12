@@ -1,0 +1,157 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      tags:
+        - Products
+      description: Obtiene una lista de todos los productos disponibles.
+      responses:
+        "200":
+          description: Éxito. Devuelve la lista de productos.
+        "500":
+          description: Error del servidor.
+
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Products
+      description: Crea un nuevo producto en la base de datos.
+      requestBody:
+        description: Datos del producto a crear.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+            example:
+              title: "Nuevo Producto"
+              description: "Descripción del nuevo producto"
+              price: 29.99
+              stock: 50
+              owner: "admin"
+      responses:
+        "201":
+          description: Producto creado exitosamente.
+        "400":
+          description: Datos de entrada inválidos.
+        "500":
+          description: Error del servidor.
+
+  /api/products/{id}:
+    get:
+      summary: Obtener un producto por ID
+      tags:
+        - Products
+      description: Obtiene los detalles de un producto específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto.
+      responses:
+        "200":
+          description: Éxito. Devuelve los detalles del producto.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+              example:
+                id: "product_id"
+                title: "Producto Ejemplo"
+                description: "Descripción del producto"
+                price: 19.99
+                stock: 100
+                owner: "admin"
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error del servidor.
+
+    put:
+      summary: Actualizar un producto por ID
+      tags:
+        - Products
+      description: Actualiza los detalles de un producto específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto.
+      requestBody:
+        description: Datos actualizados del producto.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+            example:
+              title: "Producto Actualizado"
+              description: "Nueva descripción del producto"
+              price: 25.99
+              stock: 75
+              owner: "admin"
+      responses:
+        "200":
+          description: Producto actualizado exitosamente.
+        "400":
+          description: Datos de entrada inválidos.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error del servidor.
+
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+        - Products
+      description: Elimina un producto específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del producto.
+      responses:
+        "204":
+          description: Producto eliminado exitosamente.
+        "404":
+          description: Producto no encontrado.
+        "500":
+          description: Error del servidor.
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+        owner:
+          type: string
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stock:
+          type: number
+        owner:
+          type: string

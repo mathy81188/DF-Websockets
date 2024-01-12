@@ -1,0 +1,167 @@
+paths:
+  /api/users:
+    get:
+      summary: Obtener todas las sesiones (usuarios)
+      tags:
+        - Sessions
+      responses:
+        "200":
+          description: Todas las sesiones
+        "500":
+          description: Error del servidor
+        "400":
+          description: Faltan algunos datos
+
+  /api/users/{id}:
+    get:
+      summary: Obtener usuario por ID
+      tags:
+        - Sessions
+      parameters:
+        - name: id
+          in: path
+          description: Identificador de usuario
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Se encontró un usuario
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                id: iudhdh
+                first_name: Matias
+                last_name: Daniel
+                age: 35
+                email: matias@gmail.com
+        "500":
+          description: Error del servidor
+        "400":
+          description: Faltan algunos datos
+
+  /api/users/login:
+    post:
+      summary: Iniciar sesión
+      tags:
+        - Sessions
+      requestBody:
+        description: Credenciales de usuario para iniciar sesión.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              email: matias@gmail.com
+              password: secretpassword
+      responses:
+        "200":
+          description: Sesión iniciada correctamente.
+        "401":
+          description: Credenciales incorrectas.
+        "500":
+          description: Error del servidor
+
+  /api/users/logout:
+    post:
+      summary: Cerrar sesión
+      tags:
+        - Sessions
+      responses:
+        "200":
+          description: Sesión cerrada correctamente.
+        "500":
+          description: Error del servidor
+
+  /api/users/signup:
+    post:
+      summary: Registrarse
+      tags:
+        - Sessions
+      requestBody:
+        description: Datos de usuario para el registro.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              first_name: Matias
+              last_name: Daniel
+              email: matias@gmail.com
+              age: 35
+              password: secretpassword
+      responses:
+        "201":
+          description: Usuario registrado correctamente.
+        "400":
+          description: Error en los datos de entrada.
+        "500":
+          description: Error del servidor
+
+components:
+  schemas:
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: number
+        email:
+          type: string
+
+    LoginCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    SignupCredentials:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        age:
+          type: number
+        password:
+          type: string
+
+  requestBodies:
+    loginSession:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        age:
+          type: number
+        email:
+          type: string
+
+    SignupCredentials:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        age:
+          type: number
+        password:
+          type: string

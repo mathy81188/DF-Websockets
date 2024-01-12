@@ -8,6 +8,19 @@ import { logger } from "../utils/winston.js";
 import bcrypt from "bcrypt";
 import { roles } from "../utils/constants.js";
 
+async function getAllUsers(req, res) {
+  try {
+    const users = await usersManager.getAllUsers(req.query);
+    logger.debug("Usuarios encontrado", users);
+    res.status(200).json({ message: "Users found", users });
+  } catch (error) {
+    logger.error("Error al intentar acceder a todos los users", {
+      error: error.message,
+    });
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function login(req, res, next) {
   const { email, password } = req.body;
 
@@ -212,6 +225,7 @@ async function togglePremiumStatus(req, res) {
 }
 
 export {
+  getAllUsers,
   login,
   signUp,
   logOut,

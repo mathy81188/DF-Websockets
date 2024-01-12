@@ -4,6 +4,19 @@ import { usersManager } from "../Dao/MongoDB/users.js";
 import { messages } from "../errors/error.dictionary.js";
 import { logger } from "../utils/winston.js";
 
+async function getAllCarts(req, res) {
+  try {
+    const carts = await cartManager.getAllCarts(req.query);
+    logger.debug("Carritos encontrado", carts);
+    res.status(200).json({ message: "Carts found", carts });
+  } catch (error) {
+    logger.error("Error al intentar acceder a todos los carts", {
+      error: error.message,
+    });
+    res.status(500).json({ message: error.message });
+  }
+}
+
 async function newCart(req, res) {
   try {
     const newCart = await cartManager.createCart(req.body);
@@ -116,6 +129,7 @@ async function purchaseCart(req, res) {
 }
 
 export {
+  getAllCarts,
   newCart,
   findCart,
   deleteCart,

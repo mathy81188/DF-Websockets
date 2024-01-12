@@ -19,6 +19,8 @@ import { productManager } from "./Dao/MongoDB/product.js";
 import { messageManager } from "./Dao/MongoDB/message.js";
 import messageRouter from "./router/messages.router.js";
 import { errorMidlleware } from "./middlewares/error.midlleware.js";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 const app = express();
 app.use(cookieParser());
@@ -52,6 +54,23 @@ app.use(passport.session());
 app.engine("handlebars", engine());
 app.set("views", __dirname + "/views");
 app.set("view engine", "handlebars");
+
+//SWAGGER
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API del Ecommerce",
+      description: "Series Y Peliculas",
+    },
+  },
+
+  apis: [`${__dirname}/docs/*.yaml`],
+};
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 //views
 app.use("/", viewsRouter);

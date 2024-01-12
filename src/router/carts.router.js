@@ -7,11 +7,14 @@ import {
   updateCart,
   updateProductByIdFromCartById,
   purchaseCart,
+  getAllCarts,
 } from "../controllers/cart.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { roles } from "../utils/constants.js";
 
 const router = Router();
+
+router.get("/", getAllCarts);
 
 router.post("/", authMiddleware([roles.USER]), newCart);
 

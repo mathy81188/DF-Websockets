@@ -10,6 +10,12 @@ class UsersManager extends Manager {
     super(usersModel, "cart");
   }
 
+  async getAllUsers(obj) {
+    const users = await usersModel.find(obj).populate("cart").lean();
+
+    return users;
+  }
+
   async findById(id) {
     const response = await usersModel.findById(id);
     return response;

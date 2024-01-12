@@ -11,9 +11,12 @@ import {
   resetPassword,
   togglePremiumStatus,
   signUp,
+  getAllUsers,
 } from "../controllers/users.controller.js";
 
 const router = Router();
+
+router.get("/", getAllUsers);
 
 router.post("/login", login);
 
@@ -27,10 +30,6 @@ router.post("/reset-password/:token", requestPasswordRecovery);
 
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
 router.get("/:id", getUserById);
-router.put(
-  "/premium/:uid",
-  // authMiddleware([roles.ADMIN]),
-  togglePremiumStatus
-);
+router.put("/premium/:uid", authMiddleware([roles.ADMIN]), togglePremiumStatus);
 
 export default router;

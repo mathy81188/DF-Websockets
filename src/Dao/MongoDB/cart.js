@@ -10,12 +10,21 @@ class CartManager extends Manager {
   constructor() {
     super(cartModel, "products.product");
   }
+
+  async getAllCarts(obj) {
+    const cart = await cartModel.find(obj).populate("products.product").lean();
+
+    return cart;
+  }
   async createCart(obj) {
     const createdCart = await cartModel.create(obj);
     return createdCart;
   }
   async findCartById(id) {
-    const cart = await cartModel.findById(id).populate("products").lean();
+    const cart = await cartModel
+      .findById(id)
+      .populate("products.product")
+      .lean();
 
     return cart;
   }
@@ -93,49 +102,6 @@ class CartManager extends Manager {
     }
   }
 
-  /* //original
-  async updateProductFromCart(cid, pid) {
-    let cart = await cartModel.findById(cid);
-    // logger.info(cart);
-    console.log("cart", cart);
-
-    if (!cart) {
-      return logger.error("Cart not found");
-    }
-
-    let productIndex = cart.products.findIndex((product) =>
-      product.product.equals(pid)
-    );
-
-    if (productIndex === -1) {
-      cart.products.push({
-        product: pid,
-        quantity: 1,
-      });
-    } else {
-      cart.products[productIndex].quantity++;
-    }
-
-    // Verificar si hay suficiente stock
-    //no resta el stock
-    const productInfo = await productModel.findById(pid);
-    console.log("productInfo before", productInfo);
-    // Verificar si hay suficiente stock
-    if (
-      productInfo &&
-      cart.products[productIndex] &&
-      cart.products[productIndex].quantity > productInfo.stock
-    ) {
-      return console.log("Not enough stock available");
-    }
-
-    console.log("productInfo after", productInfo);
-    // Actualizar el carrito en la base de datos
-    await cart.save();
-
-    console.log("Product added to cart successfully");
-  }
-*/
   async purchaseCartById(cid, id) {
     let cart = await cartModel.findById(cid);
     logger.info(cart);
