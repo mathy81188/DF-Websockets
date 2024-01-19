@@ -11,7 +11,8 @@ class UsersManager extends Manager {
   }
 
   async getAllUsers(obj) {
-    const users = await usersModel.find(obj).populate("cart").lean();
+    const users = await usersModel.find(obj);
+    // const users = await usersModel.find(obj).populate("cart").lean();
 
     return users;
   }

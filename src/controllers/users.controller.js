@@ -49,8 +49,21 @@ async function login(req, res, next) {
     res
       .status(200)
       .cookie("token", token, { httpOnly: true })
-      .json({ message: ` welcome ${userDB.first_name}`, token });
-    // res.redirect("/");
+      .json({
+        message: `welcome ${userDB.email}`,
+        first_name: userDB.first_name,
+        token,
+      });
+    /*codigo original y funcional
+       res
+      .status(200)
+      .cookie("token", token, { httpOnly: true })
+      .json({
+        message: `welcome ${userDB.first_name}`,
+        token,
+      });
+      */
+    //res.redirect("/");
   } catch (error) {
     next(error);
   }

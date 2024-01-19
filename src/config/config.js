@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { logger } from "../utils/winston.js";
+
 dotenv.config();
 const URI = process.env.MONGO_URI;
 
@@ -15,8 +15,8 @@ const NODE_ENV = process.env.NODE_ENV;
 
 mongoose
   .connect(URI)
-  .then(() => logger.info("conectado a bd"))
-  .catch((error) => logger.fatal(error));
+  .then(() => console.log("conectado a bd"))
+  .catch((error) => console.log(error));
 
 export default {
   mongouri: URI,
