@@ -31,24 +31,36 @@ class CartManager extends Manager {
 
   async deleteProductToCart(cid, pid) {
     const cart = await cartModel.findById(cid);
-    logger.info(cart);
+    logger.info("before deleteProductToCart", cart);
 
     if (!cart) {
       logger.error("Cart not found");
       return;
     }
 
-    let productIndex = cart.products.findIndex((product) => product.id == +pid);
+    let productIndex = cart.products.findIndex(
+      (product) => product.product == pid
+    );
     logger.info(productIndex);
 
     if (productIndex === -1) {
-      cart.products.splice(productIndex);
-    } else {
       logger.error("Product not found in the cart");
       return;
     }
 
+    // Verificar si la cantidad es mayor a 1 antes de decrementar
+    if (cart.products[productIndex].quantity > 1) {
+      cart.products[productIndex].quantity--;
+    } else {
+      // Si la cantidad es 1, eliminar el producto del carrito
+      cart.products.splice(productIndex, 1);
+    }
+
     await cart.save();
+    const updatedCart = await cartModel.findById(cid);
+
+    return updatedCart;
+    //logger.info("after deleteProductToCart", cart);
   }
 
   async updateProductFromCart(cid, pid) {
@@ -65,7 +77,7 @@ class CartManager extends Manager {
       );
 
       const productInfo = await productModel.findById(pid);
-      console.log("productInfo before", productInfo);
+      // console.log("productInfo before", productInfo);
 
       // Chequear productInfo si existe y si tiene stock
       if (!productInfo || productInfo.stock <= 0) {
@@ -90,15 +102,15 @@ class CartManager extends Manager {
       // Actualizar stock del producto en la base de datos
       await productInfo.save();
 
-      console.log("productInfo after", productInfo);
+      //  console.log("productInfo after", productInfo);
 
       // Actualizar el carrito en la base de datos
       await cart.save();
 
       console.log("Product added to cart successfully");
+      return { message: "Product edited" };
     } catch (error) {
       console.error("Error updating product and cart:", error);
-      // Handle the error appropriately
     }
   }
 

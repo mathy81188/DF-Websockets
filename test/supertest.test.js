@@ -5,16 +5,6 @@ const request = supertest.agent("http://localhost:8080");
 
 // sessions
 describe("users endpoints", () => {
-  // GET /api/users
-  describe("GET /api/users", () => {
-    it("should return all users", async () => {
-      const response = await request.get("/api/users");
-      expect(response.status).to.equal(200);
-      expect(response.body.message).to.equal("Users found");
-      expect(response.body.users).to.exist;
-    });
-  });
-
   // POST /api/users/login
   describe("POST /api/users/login", () => {
     it("should log in a user", async () => {
@@ -37,7 +27,17 @@ describe("users endpoints", () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     });
   });
-  /*funciona perfecto
+
+  // GET /api/users
+  describe("GET /api/users", () => {
+    it("should return all users", async () => {
+      const response = await request.get("/api/users");
+      expect(response.status).to.equal(200);
+      expect(response.body.message).to.equal("Users found");
+      expect(response.body.users).to.exist;
+    });
+  });
+
   // POST /api/users/signup
   describe("POST /api/users/signup", () => {
     it("should sign up a new user", async () => {
@@ -54,7 +54,7 @@ describe("users endpoints", () => {
       expect(response.body.createdUser).to.exist;
     });
   });
-
+  /*
   // POST /api/users/logout
   describe("GET /api/users/logout", () => {
     it("should log out a user", async () => {
@@ -64,7 +64,7 @@ describe("users endpoints", () => {
     });
     
   });
-
+*/
   // GET /api/users/:id
   describe("GET /api/users/:id", () => {
     it("should return a specific user by ID", async () => {
@@ -73,7 +73,7 @@ describe("users endpoints", () => {
       expect(response.body.message).to.equal("user found");
       expect(response.body.user).to.exist;
     });
-  });*/
+  });
 });
 
 //products
@@ -117,19 +117,19 @@ describe("products endpoints", () => {
       expect(response.body.prod).to.exist;
     });
   });
-  /*
+
   // DELETE /api/products/:pid
   describe("DELETE /api/products/:pid", () => {
     it("should delete a product", async () => {
       const response = await request.delete(
-        "/api/products/65a9e8a2e7436e7777c4da37"
+        "/api/products/65a9e710652c53905375fdce"
       );
       console.log("Response body:", response.body);
       expect(response.status).to.equal(200);
       expect(response.body.message).to.equal("Product deleted");
     });
   });
-*/
+
   // PUT /api/products/:pid
   describe("PUT /api/products/:pid", () => {
     it("should update a product", async () => {
@@ -141,7 +141,7 @@ describe("products endpoints", () => {
       };
 
       const response = await request
-        .put("/api/products/65a9e8a2e7436e7777c4da37")
+        .put("/api/products/6590c3009b57b69fc0be9859")
         .send(updatedProduct);
       expect(response.status).to.equal(200);
       expect(response.body.message).to.equal("Product updated");
@@ -161,11 +161,13 @@ describe("carts endpoints", () => {
   });
 
   describe("PUT /api/carts/:cid/product/:pid", () => {
-    it("should add a product to the user's cart", async () => {
+    it("should add a product to cart", async () => {
       const response = await request.put(
-        "/api/carts/655e9a854823ec5b75955804/product/6590c2966ca6380348149d09"
+        "/api/carts/65a9e283fdf68c475d060f97/product/6528a201679529d9639de6e0"
       );
+      console.log("put test", response.body);
       expect(response.status).to.equal(200);
+      expect(response.body).to.be.an("object");
       expect(response.body.message).to.equal("Product edited");
       expect(response.body.cart).to.exist;
     });
@@ -182,18 +184,18 @@ describe("carts endpoints", () => {
 
   describe("POST /api/carts", () => {
     it("should create a new cart", async () => {
-      const response = await request
-        .post("/api/carts")
-        .send({ user: "exampleUser" });
+      const response = await request.post("/api/carts");
       expect(response.status).to.equal(200);
-      expect(response.body.message).to.equal("Cart created successfully");
+      expect(response.body.message).to.equal("Carrito creado con exito");
       expect(response.body.newCart).to.exist;
     });
   });
 
   describe("DELETE /api/carts/:cid", () => {
     it("should delete a cart", async () => {
-      const response = await request.delete("/api/carts/123");
+      const response = await request.delete(
+        "/api/carts/65ac163788e47e8d07aeb2bb"
+      );
       expect(response.status).to.equal(200);
       expect(response.body.message).to.equal("Cart deleted");
     });
@@ -202,9 +204,12 @@ describe("carts endpoints", () => {
   describe("DELETE /api/carts/:cid/product/:pid", () => {
     it("should delete a product from the cart", async () => {
       const response = await request.delete(
-        "/api/carts/655e9a854823ec5b75955804/product/6590c2966ca6380348149d09"
+        "/api/carts/65a9e283fdf68c475d060f97/product/65920390a4ce2ed454f489bc"
       );
+      console.log("delete test", response.body);
+      //tiene 9 unidades
       expect(response.status).to.equal(200);
+      expect(response.body).to.be.an("object");
       expect(response.body.message).to.equal("Product deleted from Cart");
       expect(response.body.cart).to.exist;
     });

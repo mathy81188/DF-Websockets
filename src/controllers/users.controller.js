@@ -54,15 +54,7 @@ async function login(req, res, next) {
         first_name: userDB.first_name,
         token,
       });
-    /*codigo original y funcional
-       res
-      .status(200)
-      .cookie("token", token, { httpOnly: true })
-      .json({
-        message: `welcome ${userDB.first_name}`,
-        token,
-      });
-      */
+
     //res.redirect("/");
   } catch (error) {
     next(error);
@@ -121,7 +113,6 @@ async function logOut(req, res) {
 
 async function getUserById(req, res) {
   const { id } = req.params;
-  // passport.authenticate("jwt", { session: false }),
 
   try {
     const user = await usersManager.findById(id);
@@ -166,18 +157,16 @@ async function requestPasswordRecovery(req, res, next) {
 async function resetPasswordPage(req, res, next) {
   const { token } = req.params;
 
-  console.log("Token received:", token); // Agrega esta línea para imprimir el token
+  console.log("Token received:", token);
 
   try {
     const userDB = await usersManager.findByResetToken(token);
 
-    console.log("User found in DB:", userDB); // Agrega esta línea para imprimir el usuario encontrado
+    console.log("User found in DB:", userDB);
 
-    // Renderizar la vista de restablecimiento de contraseña con el token
     res.render("reset-password", { token });
   } catch (error) {
     console.error("Error in resetPasswordPage:", error);
-    // Manejar el error, por ejemplo, redirigir a una página de error
     res.status(500).send("Internal Server Error");
   }
 }

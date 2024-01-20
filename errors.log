@@ -17,3 +17,9 @@
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-19T01:45:28.557Z"}
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-19T02:01:34.618Z"}
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-19T02:46:30.831Z"}
+{"error":"Cast to ObjectId failed for value \"123\" (type string) at path \"_id\" for model \"carts\"","level":"error","message":"Error al intentar eliminar un carrito","timestamp":"2024-01-20T00:42:13.328Z"}
+{"level":"error","message":"Cart not found","timestamp":"2024-01-20T01:23:53.640Z"}
+{"level":"error","message":"Product not found in the cart","timestamp":"2024-01-20T02:11:01.730Z"}
+{"level":"error","message":"Product not found in the cart","timestamp":"2024-01-20T02:18:25.941Z"}
+{"level":"error","message":"Product not found in the cart","timestamp":"2024-01-20T02:20:50.482Z"}
+{"error":"productModel.paginate is not a function","level":"error","message":"Error al intentar acceder a todos los productos","timestamp":"2024-01-20T18:32:22.544Z"}

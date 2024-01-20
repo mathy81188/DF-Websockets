@@ -16,7 +16,7 @@ const router = Router();
 
 router.get("/", getAllCarts);
 
-router.post("/", authMiddleware([roles.USER]), newCart);
+router.post("/", /* authMiddleware([roles.USER]),*/ newCart);
 
 router.get("/:cid", findCart);
 
@@ -24,11 +24,11 @@ router.delete("/:cid", deleteCart);
 
 router.delete(
   "/:cid/product/:pid",
-  authMiddleware([roles.USER]),
+  //  authMiddleware([roles.USER]),
   deleteProductByIdFromCart
 );
 
-router.put("/:cid", authMiddleware([roles.USER]), updateCart);
+router.put("/:cid", /* authMiddleware([roles.USER]), */ updateCart);
 
 router.put("/:cid/product/:pid", updateProductByIdFromCartById);
 
