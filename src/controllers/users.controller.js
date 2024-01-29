@@ -1,6 +1,6 @@
 import { usersManager } from "../Dao/MongoDB/users.js";
 import { cartManager } from "../Dao/MongoDB/cart.js";
-import { compareData, generateToken, hashData } from "../utils.js";
+import { compareData, generateToken, hashData } from "../utils/utils.js";
 import UserDTO from "../dto/user.dto.js";
 import { messages } from "../errors/error.dictionary.js";
 import NotFound from "../errors/not-found.js";

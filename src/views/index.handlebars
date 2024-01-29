@@ -1,9 +1,19 @@
-<h3>Bienvenido {{first_name}}, email : {{email}}</h3>
-<button onclick="location.href='api/users/logout'">Logout</button>
 {{#each products}}
+  <div class="product">
+    <h1>{{title}}</h1>
+    <h2>Precio ${{price}}</h2>
+    <h2>Stock {{stock}}</h2>
 
-  <h1>{{title}}</h1>
-  <h2>Precio ${{price}}</h2>
-  <h2>Stock {{stock}}</h2>
-
+    <!-- Botones para manejar el carrito -->
+    <button onclick="addToCart('{{_id}}')">Agregar al Carrito</button>
+    <button onclick="increaseQuantity('{{_id}}')">+</button>
+    <button onclick="decreaseQuantity('{{_id}}')">-</button>
+  </div>
 {{/each}}
+<div>
+  Carrito:
+  <span id="cart-quantity">0</span>
+  productos
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/cartManager.js"></script>

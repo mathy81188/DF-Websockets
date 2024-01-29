@@ -1,12 +1,43 @@
+<!-- main.handlebars -->
 
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Websocket</title>
+    <title>Movies Market</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0;
+      background-color: #f0f0f0; color: #333; } header { background-color:
+      #007bff; color: #fff; padding: 10px; text-align: center; } nav {
+      background-color: #333; color: #fff; padding: 10px; text-align: center; }
+      main { margin: 20px; } /* Estilos específicos para el formulario de login
+      */ p { margin-top: 20px; color: #777; } a { color: #007bff; }/* Estilos
+      específicos para el formulario de signup */ form { max-width: 300px;
+      margin: 20px auto; padding: 20px; background-color: #fff; box-shadow: 0 0
+      10px rgba(0, 0, 0, 0.1); } label { display: block; margin-bottom: 8px; }
+      input { width: 100%; padding: 8px; margin-bottom: 12px; box-sizing:
+      border-box; } input[type="submit"] { background-color: #28a745; color:
+      #fff; cursor: pointer; } button { background-color: #007bff; color: #fff;
+      padding: 10px; margin-top: 10px; cursor: pointer; border: none; } /*
+      Estilos específicos para la página de productos en tiempo real */
+      form.real-time-products-form { max-width: 300px; margin: 20px auto;
+      padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0,
+      0.1); }
+
+    </style>
   </head>
   <body>
-    <h1>Movies Market</h1>
-    {{{body}}}
+    <header>
+      <h1>Movies Market</h1>
+    </header>
+    <nav>
+      <!-- Your navigation links go here -->
+    </nav>
+    <main>
+      {{{body}}}
+    </main>
+    <footer>
+      &copy; 2024 Movies Market
+    </footer>
   </body>
 </html>

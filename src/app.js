@@ -5,7 +5,7 @@ import mongoStore from "connect-mongo";
 import passport from "passport";
 import { engine } from "express-handlebars";
 import viewsRouter from "./router/views.router.js";
-import { __dirname } from "./utils.js";
+import { __dirname } from "./utils/utils.js";
 import { Server } from "socket.io";
 import config from "./config/config.js";
 import "./utils/passport.js";
@@ -21,12 +21,14 @@ import messageRouter from "./router/messages.router.js";
 import { errorMidlleware } from "./middlewares/error.midlleware.js";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
+import { join } from "path";
+import { cartManager } from "./Dao/MongoDB/cart.js";
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(join(__dirname, "../public")));
 
 //session
 
@@ -36,6 +38,11 @@ const SESSION = config.sessionSecret;
 app.use(
   session({
     secret: SESSION,
+    //
+
+    resave: false,
+    saveUninitialized: true,
+    //
     cookie: {
       maxAge: 60 * 60 * 1000,
     },
@@ -52,7 +59,7 @@ app.use(passport.session());
 //handlebars
 
 app.engine("handlebars", engine());
-app.set("views", __dirname + "/views");
+app.set("views", join(__dirname, "../views"));
 app.set("view engine", "handlebars");
 
 //SWAGGER
@@ -65,8 +72,7 @@ const swaggerOptions = {
       description: "Series Y Peliculas",
     },
   },
-
-  apis: [`${__dirname}/docs/*.yaml`],
+  apis: [`${__dirname}/../docs/*.yaml`],
 };
 
 const specs = swaggerJSDoc(swaggerOptions);
@@ -134,9 +140,30 @@ socketServer.on("connection", (socket) => {
     const products = await productManager.find({});
     socket.emit("initialProducts", products);
   });
+  /*
+  socket.on("getCart", async () => {
+    const products = await cartManager.findCartById({});
+    socket.emit("initialProducts", products);
+  });
+  socket.on("addToCart", async (productId) => {
+    const updatedCart = await cartManager.updateProductFromCart(productId);
+    io.emit("cartUpdated", updatedCart);
+  });
+
+  socket.on("increaseQuantity", async (productId) => {
+    const updatedCart = await cartManager.updateProductFromCart(productId);
+    io.emit("cartUpdated", updatedCart);
+  });
+
+  socket.on("decreaseQuantity", async (productId) => {
+    const updatedCart = await cartManager.deleteProductToCart(productId);
+    io.emit("cartUpdated", updatedCart);
+  });
+  */
 });
 
 //MENSAJES
+
 const messages = [];
 
 socketServer.on("connection", (socket) => {
@@ -153,8 +180,6 @@ socketServer.on("connection", (socket) => {
       socketServer.emit("chat", messages);
     } else {
       console.log("Unauthorized user attempted to send a message");
-
-      socket.emit("unauthorizedAccess", { error: "Unauthorized user" });
     }
   });
 });

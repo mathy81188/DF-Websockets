@@ -3,7 +3,7 @@ import { usersModel } from "../../models/users.model.js";
 import Manager from "./manager.js";
 import crypto from "crypto";
 import { transporter } from "../../utils/nodamailer.js";
-import { generateToken } from "../../utils.js";
+import { generateToken } from "../../utils/utils.js";
 
 class UsersManager extends Manager {
   constructor() {
@@ -23,7 +23,8 @@ class UsersManager extends Manager {
   }
 
   async findByEmail(email) {
-    const response = await usersModel.findOne({ email }).populate("cart");
+    const response = await usersModel.findOne({ email });
+    //const response = await usersModel.findOne({ email }).populate("cart"); comentado para test
     return response;
   }
 

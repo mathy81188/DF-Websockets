@@ -40,6 +40,13 @@ const usersSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "carts",
   },
+  /*  documents: {
+    name: String, //(Nombre del documento)
+    reference: String, //(link al documento)
+  },
+  last_connection: {
+    type: String,
+  },*/
 });
 
 export const usersModel = mongoose.model("Users", usersSchema);

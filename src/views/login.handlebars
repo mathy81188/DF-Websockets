@@ -1,14 +1,17 @@
-<h1>LOGIN</h1>
 <form action="/api/users/login" method="post">
-  email:
+  <label for="email">Email:</label>
   <input type="email" name="email" id="email" />
-  password:
+
+  <label for="password">Password:</label>
   <input type="password" name="password" id="password" />
+
   <input type="submit" value="LOGIN" />
 </form>
-<button onClick="location.href='/api/sessions/auth/google'">google</button>
+
+<button onClick="location.href='/api/sessions/auth/google'">Google</button>
+
 <p>
-  Olvido su contraseña?
+  ¿Olvidó su contraseña?
   <a
     href="/api/users/regenerate-password-reset/{{token}}"
     id="resetPasswordLink"

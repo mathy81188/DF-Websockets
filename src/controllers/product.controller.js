@@ -31,9 +31,11 @@ async function findByProductId(req, res) {
 
 async function createProduct(req, res) {
   const { title, description, price, stock } = req.body;
+
   if (!title || !description || !price || !stock) {
     return res.status(400).json({ message: messages.FIELDS_REQUIRED });
   }
+
   const userEmail = req.session.email;
   console.log("userEmail", userEmail);
 

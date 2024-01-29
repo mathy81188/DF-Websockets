@@ -31,5 +31,6 @@ router.post("/reset-password/:token", requestPasswordRecovery);
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
 router.get("/:id", getUserById);
 router.put("/premium/:uid", authMiddleware([roles.ADMIN]), togglePremiumStatus);
+router.post("api/users/:uid/documents");
 
 export default router;
