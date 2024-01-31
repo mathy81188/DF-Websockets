@@ -1,0 +1,19 @@
+<h1>Subir Documentos</h1>
+
+<form
+  action="/api/users/{{userId}}/documents"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <label for="fileType">Tipo de archivo:</label>
+  <select name="fileType" id="fileType">
+    <option value="profile">Perfil</option>
+    <option value="product">Producto</option>
+    <option value="document">Documento</option>
+  </select>
+
+  <label for="documents">Selecciona archivo(s):</label>
+  <input type="file" name="documents" id="documents" multiple />
+
+  <button type="submit">Subir Documentos</button>
+</form>

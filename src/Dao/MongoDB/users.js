@@ -11,8 +11,8 @@ class UsersManager extends Manager {
   }
 
   async getAllUsers(obj) {
-    const users = await usersModel.find(obj);
-    // const users = await usersModel.find(obj).populate("cart").lean(); comentado para test
+    // const users = await usersModel.find(obj); test
+    const users = await usersModel.find(obj).populate("cart").lean();
 
     return users;
   }
@@ -23,14 +23,14 @@ class UsersManager extends Manager {
   }
 
   async findByEmail(email) {
-    const response = await usersModel.findOne({ email });
-    //const response = await usersModel.findOne({ email }).populate("cart"); comentado para test
+    // const response = await usersModel.findOne({ email }); test
+    const response = await usersModel.findOne({ email }).populate("cart");
     return response;
   }
 
   async createOne(obj) {
-    //const response = await usersModel.create(obj).populate("cart"); comentado para test
-    const response = await usersModel.create(obj);
+    const response = await usersModel.create(obj).populate("cart");
+    // const response = await usersModel.create(obj); test
     return response;
   }
   ///
@@ -141,6 +141,19 @@ class UsersManager extends Manager {
   async hashPassword(password) {
     const saltRounds = 10;
     return bcrypt.hash(password, saltRounds);
+  }
+
+  async updateLastConnection(email) {
+    try {
+      const updatedUser = await usersModel.updateOne(
+        { email: email },
+        { $set: { last_connection: new Date() } },
+        { new: true }
+      );
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 export const usersManager = new UsersManager();

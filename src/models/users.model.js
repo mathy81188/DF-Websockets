@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+const documentSchema = new mongoose.Schema({
+  name: String,
+  reference: String,
+});
+
 const usersSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -40,13 +45,10 @@ const usersSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "carts",
   },
-  /*  documents: {
-    name: String, //(Nombre del documento)
-    reference: String, //(link al documento)
-  },
+  documents: [documentSchema],
   last_connection: {
-    type: String,
-  },*/
+    type: Date,
+  },
 });
 
 export const usersModel = mongoose.model("Users", usersSchema);

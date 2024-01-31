@@ -9,6 +9,7 @@ import {
   signUpRender,
   resetPasswordRender,
   regeneratePasswordEmailRender,
+  upload,
 } from "../controllers/views.controller.js";
 
 const router = Router();
@@ -30,5 +31,7 @@ router.get("/signup", signUpRender);
 router.get("/reset-password/:token", resetPasswordRender);
 
 router.get("/regenerate-password-reset/:token", regeneratePasswordEmailRender);
+
+router.get("/upload", upload);
 
 export default router;

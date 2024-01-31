@@ -88,6 +88,22 @@ async function regeneratePasswordEmailRender(req, res) {
   res.render("reset-password", { userDB, token });
 }
 
+async function upload(req, res) {
+  // Puedes obtener el userId desde la sesión u otro lugar
+  const { email } = req.session;
+
+  // Buscar al usuario en la base de datos usando el email
+  const user = await usersManager.findByEmail(email);
+
+  // Si el usuario existe, obtén su ID
+  const userId = user ? user._id : null;
+
+  // console.log("userId", userId);
+  console.log("req.session", req.session);
+
+  res.render("uploadImages", { userId });
+}
+
 export {
   index,
   realTimeProducts,
@@ -98,4 +114,5 @@ export {
   signUpRender,
   resetPasswordRender,
   regeneratePasswordEmailRender,
+  upload,
 };

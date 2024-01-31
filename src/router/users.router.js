@@ -12,7 +12,9 @@ import {
   togglePremiumStatus,
   signUp,
   getAllUsers,
+  uploadImages,
 } from "../controllers/users.controller.js";
+import { upload } from "../utils/multer.js";
 
 const router = Router();
 
@@ -31,6 +33,6 @@ router.post("/reset-password/:token", requestPasswordRecovery);
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
 router.get("/:id", getUserById);
 router.put("/premium/:uid", authMiddleware([roles.ADMIN]), togglePremiumStatus);
-router.post("api/users/:uid/documents");
+router.post("/:uid/documents", upload.array("documents"), uploadImages);
 
 export default router;

@@ -34,13 +34,11 @@ async function login(req, res, next) {
     if (!isPasswordValid) {
       return res.status(401).json({ error: messages.INVALID_PASSWORD });
     }
+    await usersManager.updateLastConnection(email);
+
     req.session.email = email;
     req.session.first_name = userDB.first_name;
     req.session.role = userDB.role;
-    // req.session["isAdmin"] =
-    //   email === "adminCoder@coder.com" && password === "Cod3r123"
-    //     ? true
-    //     : false;
     const token = generateToken({
       email,
       first_name: userDB.first_name,
@@ -226,6 +224,33 @@ async function togglePremiumStatus(req, res) {
   }
 }
 
+async function uploadImages(req, res, next) {
+  const { uid } = req.params;
+  const { files } = req;
+
+  console.log("uid", uid);
+  console.log("files", files);
+  console.log("req.params", req.params);
+
+  try {
+    const user = await usersManager.findById(uid);
+    if (!user) {
+      throw NotFound.createErr("Usuario no encontrado");
+    }
+
+    // Actualiza el status del usuario para indicar que ha subido un documento
+    user.status = "Documentos cargados";
+    console.log("user.status", user.status);
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Documentos cargados exitosamente", files });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export {
   getAllUsers,
   login,
@@ -237,4 +262,5 @@ export {
   requestPasswordRecovery,
   resetPassword,
   togglePremiumStatus,
+  uploadImages,
 };
