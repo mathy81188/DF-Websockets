@@ -104,6 +104,22 @@ async function upload(req, res) {
   res.render("uploadImages", { userId });
 }
 
+async function upgradePremium(req, res) {
+  // Puedes obtener el userId desde la sesión u otro lugar
+  const { email } = req.session;
+
+  // Buscar al usuario en la base de datos usando el email
+  const user = await usersManager.findByEmail(email);
+
+  // Si el usuario existe, obtén su ID
+  const userId = user ? user._id : null;
+
+  // console.log("userId", userId);
+  console.log("req.session", req.session);
+
+  res.render("premiumDocs", { userId });
+}
+
 export {
   index,
   realTimeProducts,
@@ -115,4 +131,5 @@ export {
   resetPasswordRender,
   regeneratePasswordEmailRender,
   upload,
+  upgradePremium,
 };

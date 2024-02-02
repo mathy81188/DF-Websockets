@@ -196,24 +196,71 @@ async function resetPassword(req, res, next) {
   }
 }
 
+const areRequiredDocumentsUploaded = (req) => {
+  const uploadedFiles = req.files;
+  const requiredDocuments = ["identificacion", "domicilio", "estadoDeCuenta"];
+
+  return requiredDocuments.every((document) => uploadedFiles[document]);
+};
+
 async function togglePremiumStatus(req, res) {
   const { uid } = req.params;
-  console.log("uid", uid);
+  const { files } = req;
+  console.log("Type of files:", typeof files);
+  console.log("Files:", files);
 
   try {
     const user = await usersManager.findById(uid);
-    console.log("user", user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Verificar si el usuario ha cargado los documentos necesarios
+    console.log(
+      "Required documents uploaded:",
+      areRequiredDocumentsUploaded(req)
+    );
+    if (!areRequiredDocumentsUploaded(req)) {
+      return res.status(400).json({
+        message: "Sube todas las imágenes requeridas para cambiar a premium.",
+      });
+    }
+    if (req.session.role === "premium") {
+      return res.status(400).json({
+        message:
+          "Ya eres usuario premium. No es necesario cargar las imágenes nuevamente.",
+      });
+    }
+
     // Cambiar el estado de premium
     user.role = user.role === roles.USER ? roles.PREMIUM : roles.USER;
-    console.log("Premium status updated:", user.role);
 
     // Guardar los cambios
+    user.role = roles.PREMIUM;
     await user.save();
-    console.log("User saved:", user);
+    console.log("user premium?", user.role);
+
+    Object.values(files).forEach((fieldFiles) => {
+      fieldFiles.forEach((file) => {
+        const fileType = file.fieldname;
+        const newPremiumFile = {
+          name: file.originalname,
+          reference: fileType,
+        };
+        user.documents.push(newPremiumFile);
+      });
+    });
+
+    await user.save();
+
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error al cerrar la sesión:", err);
+        return res.status(500).json({ message: "Error al cerrar la sesión" });
+      } else {
+        console.log("Sesión cerrada después de cambiar a premium.");
+      }
+    });
 
     return res
       .status(200)
@@ -240,6 +287,22 @@ async function uploadImages(req, res, next) {
 
     // Actualiza el status del usuario para indicar que ha subido un documento
     user.status = "Documentos cargados";
+
+    console.log("user.status", user.status);
+
+    // Itera sobre los archivos y agrega documentos al array en el modelo User
+    files.forEach((file) => {
+      const fileType = req.body.fileType;
+
+      // modelo del documento
+      const newDocument = {
+        name: file.originalname, // Usa el nombre original del archivo como nombre del documento
+        reference: fileType,
+      };
+
+      // Agrega el nuevo documento al array
+      user.documents.push(newDocument);
+    });
     console.log("user.status", user.status);
     await user.save();
 

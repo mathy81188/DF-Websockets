@@ -10,6 +10,7 @@ import {
   resetPasswordRender,
   regeneratePasswordEmailRender,
   upload,
+  upgradePremium,
 } from "../controllers/views.controller.js";
 
 const router = Router();
@@ -33,5 +34,7 @@ router.get("/reset-password/:token", resetPasswordRender);
 router.get("/regenerate-password-reset/:token", regeneratePasswordEmailRender);
 
 router.get("/upload", upload);
+
+router.get("/upgrade", upgradePremium);
 
 export default router;

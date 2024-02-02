@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
 
-const documentSchema = new mongoose.Schema({
-  name: String,
-  reference: String,
-});
-
 const usersSchema = new mongoose.Schema({
   first_name: {
     type: String,
@@ -45,7 +40,7 @@ const usersSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "carts",
   },
-  documents: [documentSchema],
+  documents: [{ name: String, reference: String }],
   last_connection: {
     type: Date,
   },

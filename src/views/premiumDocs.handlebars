@@ -1,0 +1,20 @@
+<h1>Subir Documentos para premium</h1>
+
+<form
+  action="/api/users/premium/{{userId}}"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <input type="hidden" name="fileType" value="premium" />
+  <label for="identificacion">Identificación:</label>
+
+  <input type="file" name="identificacion" id="identificacion" required />
+
+  <label for="domicilio">Comprobante de domicilio:</label>
+  <input type="file" name="domicilio" id="domicilio" required />
+
+  <label for="estadoDeCuenta">Comprobante de estado de cuenta:</label>
+  <input type="file" name="estadoDeCuenta" id="estadoDeCuenta" required />
+
+  <button type="submit">Subir Documentos</button>
+</form>
