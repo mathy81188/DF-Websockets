@@ -1,8 +1,8 @@
-import { hash } from "bcrypt";
 import { productManager } from "../Dao/MongoDB/product.js";
 import { messages } from "../errors/error.dictionary.js";
 import { logger } from "../utils/winston.js";
 import { usersManager } from "../Dao/MongoDB/users.js";
+import { transporter } from "../utils/nodamailer.js";
 
 async function getAllProducts(req, res) {
   try {
@@ -37,11 +37,10 @@ async function createProduct(req, res) {
   }
 
   const userEmail = req.session.email;
-  console.log("userEmail", userEmail);
 
   try {
     const user = await usersManager.findByEmail(userEmail);
-    console.log("owner", user);
+
     const newProd = await productManager.create({
       title,
       description,
@@ -56,14 +55,13 @@ async function createProduct(req, res) {
     res.status(500).json({ message: error.message });
   }
 }
+
 async function deleteProduct(req, res) {
   const { pid } = req.params;
   const sesion = req.session;
-  console.log("sesion", sesion);
 
   try {
     const product = await productManager.findById(pid);
-    console.log("product", product);
 
     if (!product) {
       return res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
@@ -80,6 +78,18 @@ async function deleteProduct(req, res) {
       if (response === -1) {
         return res.status(400).json({ message: messages.PRODUCT_NOT_FOUND });
       } else {
+        const owner = await usersManager.findByEmail(product.owner);
+        if (owner.role === "premium") {
+          // Envía un correo electrónico solo si el propietario es un usuario premium
+          const mailOptions = {
+            from: "",
+            to: product.owner,
+            subject: "Su producto fue eliminado",
+            text: `Su producto ha sido eliminado correctamente`,
+          };
+
+          await transporter.sendMail(mailOptions);
+        }
         return res.status(200).json({ message: "Product deleted" });
       }
     } else {
@@ -110,6 +120,7 @@ async function updateProduct(req, res) {
     res.status(500).json({ message: error });
   }
 }
+
 export {
   getAllProducts,
   findByProductId,

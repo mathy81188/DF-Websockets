@@ -1,19 +1,20 @@
+<h1>Welcome, {{first_name}}!</h1>
+<div id="cart-id" data-cart-id="{{cartId}}"></div>
 {{#each products}}
   <div class="product">
     <h1>{{title}}</h1>
     <h2>Precio ${{price}}</h2>
-    <h2>Stock {{stock}}</h2>
+    <h2>Stock <span id="stock-{{_id}}">{{stock}}</span></h2>
 
-    <!-- Botones para manejar el carrito -->
-    <button onclick="addToCart('{{_id}}')">Agregar al Carrito</button>
-    <button onclick="increaseQuantity('{{_id}}')">+</button>
-    <button onclick="decreaseQuantity('{{_id}}')">-</button>
+    <!-- Boton para agregar el carrito -->
+    <button
+      class="add-to-cart-btn"
+      data-cart-id="{{_cartId}}"
+      data-product-id="{{_id}}"
+    >Agregar al Carrito</button>
   </div>
 {{/each}}
-<div>
-  Carrito:
-  <span id="cart-quantity">0</span>
-  productos
-</div>
+
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/cartManager.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/addToCart.js"></script>

@@ -39,7 +39,7 @@ describe("products endpoints", () => {
       };
 
       const response = await request.post("/api/products").send(newProduct);
-      console.log("Response body:", response.body);
+
       expect(response.status).to.equal(200);
       expect(response.body.message).to.equal("Product created");
       expect(response.body.prod).to.exist;
@@ -52,7 +52,7 @@ describe("products endpoints", () => {
       const response = await request.delete(
         "/api/products/6590c3009b57b69fc0be9859"
       );
-      console.log("Response body:", response.body);
+
       expect(response.status).to.equal(200);
       expect(response.body.message).to.equal("Product deleted");
     });

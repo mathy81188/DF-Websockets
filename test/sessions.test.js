@@ -17,7 +17,6 @@ describe("users endpoints", () => {
         .post("/api/users/login")
         .send(userCredentials);
       expect(response.status).to.equal(200);
-      console.log("Response body:", response.body);
 
       expect(response.body.message).to.be.equal(
         `welcome ${userCredentials.email}`
@@ -69,7 +68,7 @@ describe("users endpoints", () => {
   describe("GET /api/users/logout", () => {
     it("should log out a user", async () => {
       const response = await request.get("/api/users/logout");
-      console.log("Response body:", response.body);
+
       expect(response.status).to.equal(302);
     });
   });

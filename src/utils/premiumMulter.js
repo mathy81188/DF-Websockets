@@ -7,8 +7,6 @@ const storage = multer.diskStorage({
     const fileType = file.fieldname;
     console.log("file.fieldname", file.fieldname);
 
-    console.log("req.body", req.body);
-
     if (fileType === "estadoDeCuenta") {
       cb(null, join(__dirname, "../img/premium/estadoDeCuenta"));
     } else if (fileType === "domicilio") {

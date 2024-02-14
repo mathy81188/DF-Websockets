@@ -10,7 +10,7 @@ router.get(
 
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { successRedirect: "/current" })
+  passport.authenticate("google", { successRedirect: "/" })
 );
 
 export default router;

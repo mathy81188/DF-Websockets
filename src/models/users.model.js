@@ -15,14 +15,14 @@ const usersSchema = new mongoose.Schema({
   age: {
     type: Number,
   },
-  //
+
   resetToken: {
     type: String,
   },
   resetTokenExpiration: {
     type: Date,
   },
-  //
+
   password: {
     type: String,
   },

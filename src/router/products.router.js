@@ -6,8 +6,8 @@ import {
   deleteProduct,
   updateProduct,
 } from "../controllers/product.controller.js";
-//import { authMiddleware } from "../middlewares/auth.middleware.js";
-//import { roles } from "../utils/constants.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roles } from "../utils/constants.js";
 
 const router = Router();
 
@@ -17,13 +17,13 @@ router.get("/:pid", findByProductId);
 
 router.post(
   "/",
-  // authMiddleware([roles.ADMIN, roles.USER, roles.PREMIUM]),
+  authMiddleware([roles.ADMIN, roles.USER, roles.PREMIUM]),
   createProduct
 );
 
 router.delete(
   "/:pid",
-  //  authMiddleware([roles.ADMIN, roles.PREMIUM]),
+  authMiddleware([roles.ADMIN, roles.PREMIUM]),
   deleteProduct
 );
 

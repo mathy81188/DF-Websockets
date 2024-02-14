@@ -1,17 +1,27 @@
-<h1>Carrito de Compras</h1>
+<h1 id="cart-id" data-cart-id="{{cid}}">Carrito de Compras</h1>
 
 {{#if cart.products.length}}
-
   <ul>
     {{#each cart.products}}
-      <li>{{this.product.title}}
+      <li>
+        {{this.product.title}}
         - Cantidad:
         {{this.quantity}}
-        - Precio: $
-        {{this.product.price}}</li>
+        - Precio: ${{this.totalPrice}}
+
+        <button
+          class="add-to-cart-btn"
+          data-cart-id="{{this.product._id}}"
+        >+</button>
+        <button class="delete-to-cart-btn" id="{{this.product._id}}">-</button>
+      </li>
     {{/each}}
   </ul>
-  <p>Total: ${{cart.total}}</p>
+
+  <p id="total">Total: ${{cart.total}}</p>
+  <button class="purchase-cart-btn" id="{{cid}}">Finalizar compra</button>
 {{else}}
   <p>El carrito está vacío.</p>
 {{/if}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/cartManager.js"></script>

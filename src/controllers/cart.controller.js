@@ -63,7 +63,7 @@ async function deleteProductByIdFromCart(req, res) {
   try {
     const { cid, pid } = req.params;
     const cart = await cartManager.deleteProductToCart(cid, pid);
-    console.log("delete product from cart", cart);
+
     res.status(200).json({ message: "Product deleted from Cart", cart });
   } catch (error) {
     res.status(500).json({ message: messages.PRODUCT_NOT_FOUND });
@@ -87,28 +87,34 @@ async function updateCart(req, res) {
 async function updateProductByIdFromCartById(req, res) {
   try {
     const { cid, pid } = req.params;
-    // const userRole = req.session.role;
-    //console.log("userRole", userRole);
+    let userRole;
 
+    // Verificar si el usuario ha iniciado sesión con Google Passport o correo electrónico y contraseña
+    if (req.user) {
+      // Obtener el rol del usuario a través de req.user
+      userRole = req.user.role;
+    } else {
+      // Obtener el rol del usuario a través de req.session
+      userRole = req.session.role;
+    }
     // Obtener información completa del producto
     const productInfo = await productManager.findById(pid);
-    console.log("put product", productInfo);
 
     if (!productInfo) {
       return res.status(404).json({ message: "Product not found" });
     }
-    /* funciona pero me rompe el test
-    // Verificar el rol y el propietario del producto
-    if (userRole === "premium" && productInfo.owner !== req.session.email) {
-      return res.status(403).json({
-        message:
-          "Premium users cannot add products owned by others to the cart",
-      });
+
+    if (userRole === "premium") {
+      // Verificar si el usuario intenta agregar un producto propio
+      if (productInfo.owner === req.session.email) {
+        return res.status(403).json({
+          message: "Premium users cannot add their own products to the cart",
+        });
+      }
     }
-*/
+
     // Llamar a la función de manager solo si la validación es exitosa
     const cart = await cartManager.updateProductFromCart(cid, pid);
-    console.log("put cart", cart);
 
     return res.status(200).json({ message: "Product edited", cart });
   } catch (error) {
@@ -118,16 +124,39 @@ async function updateProductByIdFromCartById(req, res) {
 
 async function purchaseCart(req, res) {
   try {
-    const { cid, id } = req.params;
-    const cart = await cartManager.purchaseCartById(cid);
-    const user = await usersManager.findById(id);
-    logger.info("Carrito comprado con éxito", { cartId: cid, userId: id });
-    res.status(200).json({ message: "Cart purchase", cart });
+    const { cid } = req.params;
+    const purchaseResult = await cartManager.purchaseCartById(cid); // Llamada al método para comprar el carrito
+
+    if (purchaseResult.status === "success") {
+      const { generateTicket, amount, purchaser, ticketProducts } =
+        purchaseResult;
+
+      // Construimos el mensaje del ticket
+      const ticketMessage = `
+        <h2>Ticket de Compra</h2>
+        <p><strong>Código:</strong> ${generateTicket.code}</p>
+        <p><strong>Fecha de Compra:</strong> ${new Date(
+          generateTicket.purchase_datetime
+        ).toLocaleString()}</p>
+        <p><strong>Importe Total:</strong> $${amount}</p>
+        <p><strong>Comprador:</strong> ${purchaser}</p>
+        <h3>Productos:</h3>
+        <ul>
+          ${ticketProducts
+            .map(
+              (product) =>
+                `<li>${product.productInfo.title} - Cantidad: ${product.quantity} - Precio: $${product.productInfo.price}</li>`
+            )
+            .join("")}
+        </ul>
+      `;
+
+      res.status(200).json({ message: "Cart purchase", ticketMessage });
+    } else {
+      res.status(400).json({ message: purchaseResult.message });
+    }
   } catch (error) {
-    logger.error("Error al intentar comprar un carrito", {
-      error: error.message,
-    });
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Error al realizar la compra" });
   }
 }
 

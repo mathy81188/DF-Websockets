@@ -23,11 +23,10 @@ Swal.fire({
   socketClient.emit("newUser", user);
 });
 
-socketClient.on("chat", (messages) => {
-  const chat = messages
-    .map((objMessage) => `<p>${objMessage.user}: ${objMessage.message}</p>`)
-    .join(" ");
-  divChat.innerHTML = chat;
+socketClient.on("chat", (message) => {
+  const chatMessage = `<p>${message.user}: ${message.message}</p>`;
+
+  divChat.innerHTML += chatMessage;
 });
 
 form.onsubmit = (e) => {

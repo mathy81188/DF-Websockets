@@ -13,6 +13,7 @@ import {
   signUp,
   getAllUsers,
   uploadImages,
+  deleteInactiveUsers,
 } from "../controllers/users.controller.js";
 import { upload } from "../utils/multer.js";
 import { uploadPremium } from "../utils/premiumMulter.js";
@@ -44,5 +45,7 @@ router.post(
   togglePremiumStatus
 );
 router.post("/:uid/documents", upload.array("documents"), uploadImages);
+
+router.delete("/delete", deleteInactiveUsers);
 
 export default router;

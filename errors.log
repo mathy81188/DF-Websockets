@@ -51,3 +51,10 @@
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-26T23:57:05.023Z"}
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-27T00:01:22.653Z"}
 {"level":"error","message":"Ha ocurrido un error al crear este producto","timestamp":"2024-01-27T00:06:46.140Z"}
+{"level":"error","message":"Error during signUp: usersModel.create(...).populate is not a function","stack":"TypeError: usersModel.create(...).populate is not a function\n    at UsersManager.createOne (file:///C:/Users/Matias/Desktop/DesafioEntregable-Websockets/src/Dao/MongoDB/users.js:33:51)\n    at signUp (file:///C:/Users/Matias/Desktop/DesafioEntregable-Websockets/src/controllers/users.controller.js:110:44)","timestamp":"2024-02-05T22:52:56.138Z"}
+{"level":"error","message":"Error during signUp: usersModel.create(...).populate is not a function","stack":"TypeError: usersModel.create(...).populate is not a function\n    at UsersManager.createOne (file:///C:/Users/Matias/Desktop/DesafioEntregable-Websockets/src/Dao/MongoDB/users.js:33:51)\n    at signUp (file:///C:/Users/Matias/Desktop/DesafioEntregable-Websockets/src/controllers/users.controller.js:110:44)","timestamp":"2024-02-05T22:56:44.839Z"}
+{"level":"error","message":"Insufficient stock for product with ID 6528a214679529d9639de6e2","timestamp":"2024-02-13T00:19:12.101Z"}
+{"level":"error","message":"Insufficient stock for product with ID 6528a214679529d9639de6e2","timestamp":"2024-02-13T16:59:09.238Z"}
+{"level":"error","message":"Insufficient stock for product with ID 6528a214679529d9639de6e2","timestamp":"2024-02-13T17:48:28.691Z"}
+{"level":"error","message":"Este es un mensaje de error","timestamp":"2024-02-14T17:21:22.099Z"}
+{"level":"fatal","message":"Este es un mensaje fatal","timestamp":"2024-02-14T17:21:22.390Z"}

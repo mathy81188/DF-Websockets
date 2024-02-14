@@ -30,43 +30,58 @@ class CartManager extends Manager {
   }
 
   async deleteProductToCart(cid, pid) {
-    const cart = await cartModel.findById(cid);
-    logger.info("before deleteProductToCart", cart);
+    try {
+      // Obtener la información completa del producto
+      const product = await productModel.findById(pid);
 
-    if (!cart) {
-      logger.error("Cart not found");
-      return;
-    }
+      if (!product) {
+        return logger.error("Product not found");
+      }
 
-    let productIndex = cart.products.findIndex(
-      (product) => product.product == pid
-    );
-    logger.info(productIndex);
+      let cart = await cartModel.findById(cid);
 
-    if (productIndex === -1) {
-      logger.error("Product not found in the cart");
-      return;
-    }
+      if (!cart) {
+        return logger.error("Cart not found");
+      }
 
-    // Verificar si la cantidad es mayor a 1 antes de decrementar
-    if (cart.products[productIndex].quantity > 1) {
+      let productIndex = cart.products.findIndex(
+        (product) => product.product == pid
+      );
+
+      if (productIndex === -1) {
+        return logger.error("Product not found in the cart");
+      }
+
+      // Obtener el precio unitario del producto
+      const productPrice = product.price;
+
+      // Decrementar la cantidad del producto en el carrito
       cart.products[productIndex].quantity--;
-    } else {
-      // Si la cantidad es 1, eliminar el producto del carrito
-      cart.products.splice(productIndex, 1);
+
+      // Restar el precio unitario del producto por la cantidad eliminada al precio total del producto en el carrito
+      cart.products[productIndex].totalPrice -= productPrice * 1; // Restar el precio unitario por la cantidad eliminada
+
+      // Eliminar el producto del carrito si la cantidad es 0
+      if (cart.products[productIndex].quantity === 0) {
+        cart.products.splice(productIndex, 1);
+      }
+      // Actualizar el stock del producto en la base de datos
+      product.stock++;
+      await product.save(); // Guardar la actualización del stock
+
+      // Guardar los cambios en el carrito
+      await cart.save();
+
+      const updatedCart = await cartModel.findById(cid);
+      return updatedCart;
+    } catch (error) {
+      console.error("Error deleting product from cart:", error);
     }
-
-    await cart.save();
-    const updatedCart = await cartModel.findById(cid);
-
-    return updatedCart;
-    //logger.info("after deleteProductToCart", cart);
   }
 
   async updateProductFromCart(cid, pid) {
     try {
       let cart = await cartModel.findById(cid);
-      console.log("cart", cart);
 
       if (!cart) {
         return logger.error("Cart not found");
@@ -77,34 +92,31 @@ class CartManager extends Manager {
       );
 
       const productInfo = await productModel.findById(pid);
-      // console.log("productInfo before", productInfo);
 
-      // Chequear productInfo si existe y si tiene stock
       if (!productInfo || productInfo.stock <= 0) {
         return console.log("Product not found or out of stock");
       }
 
-      // controlar si el poducto xiste en el carrito
       if (productIndex === -1) {
-        // agregar producto al carrito
+        // Agregar el producto al carrito
         cart.products.push({
           product: pid,
           quantity: 1,
+          totalPrice: productInfo.price, // Establecer el precio total inicial
         });
       } else {
-        // Incrementa the quantity en cart
+        // Incrementar la cantidad en el carrito
         cart.products[productIndex].quantity++;
+        // Actualizar el precio total del producto en función de la cantidad
+        cart.products[productIndex].totalPrice += productInfo.price;
       }
 
-      // Update product stock
+      // Actualizar el stock del producto en la base de datos
       productInfo.stock--;
 
-      // Actualizar stock del producto en la base de datos
       await productInfo.save();
 
-      //  console.log("productInfo after", productInfo);
-
-      // Actualizar el carrito en la base de datos
+      // Guardar los cambios en el carrito
       await cart.save();
 
       console.log("Product added to cart successfully");
@@ -114,94 +126,119 @@ class CartManager extends Manager {
     }
   }
 
-  async purchaseCartById(cid, id) {
-    let cart = await cartModel.findById(cid);
-    logger.info(cart);
+  async purchaseCartById(cid) {
+    try {
+      let cart = await cartModel.findById(cid);
 
-    if (!cart) {
-      return logger.error("Cart not found");
-    }
-
-    if (cart.products.length === 0) {
-      return { status: "error", message: "El carrito está vacío" };
-    }
-    const purchaser = await usersModel.findOne({ cart: cid }).select("email");
-
-    if (!purchaser) {
-      return logger.error("Usuario no encontrado para el carrito");
-    }
-
-    const userEmail = purchaser.email;
-    if (purchaser.cart == cart) {
-      return logger.info("cart asociado a user", purchaser);
-    }
-    const ticketProducts = [];
-
-    let totalAmountSold = 0;
-
-    for (const productInCart of cart.products) {
-      logger.info("Product Info in Cart:", productInCart);
-      const productoInfo = await productModel
-        .findById(productInCart.product)
-        .lean();
-      logger.info("Full Product Info:", productoInfo);
-      if (!productoInfo) {
-        logger.error(
-          `Insufficient stock for product with ID ${productInCart.product}`
-        );
+      if (!cart) {
+        return logger.error("Cart not found");
       }
 
-      if (productInCart.quantity <= productoInfo.stock) {
-        ticketProducts.push({
-          product: productInCart.product,
-          quantity: productInCart.quantity,
-          productInfo: {
-            title: productoInfo.title,
-            description: productoInfo.description,
-            price: productoInfo.price,
-          },
-        });
-        totalAmountSold += productInCart.quantity * productoInfo.price;
-        logger.info(`Monto total: ${totalAmountSold}`);
-
-        await productModel.updateOne(
-          { _id: productInCart.product },
-          { $inc: { stock: -productInCart.quantity } }
-        );
-      } else {
-        logger.error(
-          `Insufficient stock for product with ID ${productInCart.product}`
-        );
+      if (cart.products.length === 0) {
+        return { status: "error", message: "El carrito está vacío" };
       }
-    }
-    cart.products = [];
-    await cartModel.updateOne({ _id: cid }, { products: [] });
-    function generateUniqueCode() {
-      const timestamp = new Date().getTime();
-      const random = Math.random().toString(36).substring(2, 8);
-      const uniqueCode = `${timestamp}-${random}`;
-      return uniqueCode;
-    }
 
-    const newTicket = {
-      code: generateUniqueCode(),
-      purchase_datetime: new Date(),
-      amount: totalAmountSold,
-      purchaser: userEmail,
-    };
-    const generateTicket = ticketsModel.create(newTicket);
-    cart.products = [];
-    await cart.save();
-    return {
-      generateTicket,
-      status: "success",
-      message: "Compra realizada",
-      amount: totalAmountSold,
-      //
-      purchaser: userEmail,
-      //
-      ticketProducts,
-    };
+      const purchaser = await usersModel.findOne({ cart: cid }).select("email");
+
+      if (!purchaser) {
+        return logger.error("Usuario no encontrado para el carrito");
+      }
+
+      const userEmail = purchaser.email;
+
+      const ticketProducts = [];
+      let totalAmountSold = 0;
+      let productsWithInsufficientStock = [];
+
+      for (const productInCart of cart.products) {
+        const productInfo = await productModel
+          .findById(productInCart.product)
+          .lean();
+
+        if (!productInfo) {
+          logger.error(
+            `Product with ID ${productInCart.product} not found in database`
+          );
+          continue; // Pasar al siguiente producto si no se encuentra la información
+        }
+
+        // Obtener el stock disponible en la base de datos, considerando las unidades en el carrito
+        const availableStock = productInfo.stock + productInCart.quantity;
+
+        if (productInCart.quantity <= availableStock) {
+          ticketProducts.push({
+            product: productInCart.product,
+            quantity: productInCart.quantity,
+            productInfo: {
+              title: productInfo.title,
+              description: productInfo.description,
+              price: productInfo.price,
+            },
+          });
+          totalAmountSold += productInCart.quantity * productInfo.price;
+          logger.info(`Total amount: ${totalAmountSold}`);
+        } else {
+          logger.error(
+            `Insufficient stock for product with ID ${productInCart.product}`
+          );
+          productsWithInsufficientStock.push(productInfo.title);
+        }
+      }
+
+      // Verificar si algunos productos tienen stock insuficiente debido a reservas temporales
+      if (productsWithInsufficientStock.length > 0) {
+        return {
+          status: "error",
+          message: `Los siguientes productos no tienen suficiente stock disponible: ${productsWithInsufficientStock.join(
+            ", "
+          )}`,
+        };
+      }
+
+      // Si todos los productos tienen suficiente stock, procede con la compra
+      cart.products = [];
+      await cartModel.updateOne({ _id: cid }, { products: [] });
+
+      // Restar el stock reservado del stock disponible para cada producto en el carrito
+      for (const productInCart of cart.products) {
+        const product = await productModel.findById(productInCart.product);
+        if (product) {
+          product.stock -= productInCart.quantity;
+          await product.save();
+        }
+      }
+
+      function generateUniqueCode() {
+        const timestamp = new Date().getTime();
+        const random = Math.random().toString(36).substring(2, 8);
+        const uniqueCode = `${timestamp}-${random}`;
+        return uniqueCode;
+      }
+
+      const newTicket = {
+        code: generateUniqueCode(),
+        purchase_datetime: new Date(),
+        amount: totalAmountSold,
+        purchaser: userEmail,
+      };
+
+      const generateTicket = await ticketsModel.create(newTicket);
+
+      // Guardar los cambios en el carrito después de la compra
+      await cart.save();
+
+      return {
+        generateTicket,
+        status: "success",
+        message: "Compra realizada",
+        amount: totalAmountSold,
+        purchaser: userEmail,
+        ticketProducts,
+      };
+    } catch (error) {
+      logger.error("Error al realizar la compra:", error);
+      throw new Error("Error al realizar la compra");
+    }
   }
 }
 

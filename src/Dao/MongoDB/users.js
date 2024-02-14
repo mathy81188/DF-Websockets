@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { usersModel } from "../../models/users.model.js";
 import Manager from "./manager.js";
-import crypto from "crypto";
 import { transporter } from "../../utils/nodamailer.js";
 import { generateToken } from "../../utils/utils.js";
+import moment from "moment-timezone";
 
 class UsersManager extends Manager {
   constructor() {
@@ -29,11 +29,40 @@ class UsersManager extends Manager {
   }
 
   async createOne(obj) {
-    const response = await usersModel.create(obj).populate("cart");
-    // const response = await usersModel.create(obj); test
+    const response = await usersModel.create(obj);
     return response;
   }
-  ///
+
+  async deleteOneById(id) {
+    const response = await usersModel.deleteOne({ _id: id });
+    console.log("responseManager", response);
+    return response;
+  }
+
+  async updateRoleById(userId, newRole) {
+    try {
+      const updatedUser = await usersModel.findByIdAndUpdate(
+        userId,
+        { role: newRole },
+        { new: true }
+      );
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateGoogleStatus(id, googleStatus) {
+    const user = await usersModel.findByIdAndUpdate(
+      id,
+      { google: googleStatus },
+      { new: true }
+    );
+    console.log(user);
+
+    return user;
+  }
+
   async storePasswordResetToken(email, token, expirationTime) {
     await usersModel.updateOne(
       { email },
@@ -73,7 +102,7 @@ class UsersManager extends Manager {
     const isPasswordValid = await bcrypt.compare(password, hashedPassword);
     return isPasswordValid;
   }
-  //
+
   async requestPasswordReset(email, token) {
     try {
       // Lógica para generar y enviar el correo de restablecimiento de contraseña
@@ -85,7 +114,6 @@ class UsersManager extends Manager {
         user.resetTokenExpiration &&
         user.resetTokenExpiration >= new Date()
       ) {
-        console.log("Token already generated and not expired");
         return { message: "Password recovery email sent successfully" };
       }
       // Generar un token y configurar la URL de restablecimiento
@@ -154,6 +182,23 @@ class UsersManager extends Manager {
     } catch (error) {
       throw error;
     }
+  }
+
+  async deleteUsers(obj) {
+    const users = await usersModel.deleteMany(obj);
+
+    return users;
+  }
+
+  async getInactiveUsers() {
+    const twoDaysAgo = moment().subtract(2, "days").toDate();
+
+    // Busca y devuelve los usuarios inactivos
+    const inactiveUsers = await usersModel.find({
+      last_connection: { $lt: twoDaysAgo },
+    });
+
+    return inactiveUsers;
   }
 }
 export const usersManager = new UsersManager();

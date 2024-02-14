@@ -7,12 +7,20 @@ import NotFound from "../errors/not-found.js";
 import { logger } from "../utils/winston.js";
 import bcrypt from "bcrypt";
 import { roles } from "../utils/constants.js";
+import moment from "moment-timezone";
+import { transporter } from "../utils/nodamailer.js";
 
 async function getAllUsers(req, res) {
   try {
     const users = await usersManager.getAllUsers(req.query);
+    const simplifiedUsers = users.map((user) => ({
+      first_name: user.first_name,
+      email: user.email,
+      role: user.role,
+    }));
+
     logger.debug("Usuarios encontrado", users);
-    res.status(200).json({ message: "Users found", users });
+    res.status(200).json({ message: "Users found", simplifiedUsers });
   } catch (error) {
     logger.error("Error al intentar acceder a todos los users", {
       error: error.message,
@@ -26,6 +34,7 @@ async function login(req, res, next) {
 
   try {
     const userDB = await usersManager.findByEmail(email);
+
     if (!userDB) {
       throw NotFound.createErr("email");
     }
@@ -34,26 +43,39 @@ async function login(req, res, next) {
     if (!isPasswordValid) {
       return res.status(401).json({ error: messages.INVALID_PASSWORD });
     }
+
     await usersManager.updateLastConnection(email);
 
+    // Guarda el valor actual de last_connection antes de la actualización
+    userDB.last_connection = new Date();
+    await userDB.save();
+
+    req.session.loggedIn = true;
+
     req.session.email = email;
+
+    req.session.cart = userDB.cart;
+
     req.session.first_name = userDB.first_name;
     req.session.role = userDB.role;
+
     const token = generateToken({
       email,
       first_name: userDB.first_name,
       role: userDB.role,
     });
-    res
-      .status(200)
-      .cookie("token", token, { httpOnly: true })
-      .json({
-        message: `welcome ${userDB.email}`,
-        first_name: userDB.first_name,
-        token,
-      });
+    //
+    // res
+    //   .status(200)
+    //   .cookie("token", token, { httpOnly: true })
+    //   .json({
+    //     message: `welcome ${userDB.email}`,
+    //     first_name: userDB.first_name,
+    //     last_connection: userDB.last_connection,
+    //     token,
+    //   });
 
-    //res.redirect("/");
+    res.redirect("/");
   } catch (error) {
     next(error);
   }
@@ -122,15 +144,24 @@ async function getUserById(req, res) {
   }
 }
 
+async function deleteOne(req, res) {
+  const { id } = req.params;
+
+  try {
+    const user = await usersManager.deleteOneById(id);
+
+    res.status(200).json({ message: "user deleted", user });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+    // res.status(200).json(messages.USER_NOT_FOUND);
+  }
+}
+
 async function regeneratePasswordReset(req, res, next) {
   const { email, token } = req.params;
 
-  console.log("Token received:", token);
-
   try {
     const userDB = await usersManager.findByResetToken(token);
-
-    console.log("User found in DB:", userDB);
 
     res.render("regenerate-password-reset", { token });
   } catch (error) {
@@ -155,12 +186,8 @@ async function requestPasswordRecovery(req, res, next) {
 async function resetPasswordPage(req, res, next) {
   const { token } = req.params;
 
-  console.log("Token received:", token);
-
   try {
     const userDB = await usersManager.findByResetToken(token);
-
-    console.log("User found in DB:", userDB);
 
     res.render("reset-password", { token });
   } catch (error) {
@@ -171,7 +198,7 @@ async function resetPasswordPage(req, res, next) {
 
 async function resetPassword(req, res, next) {
   const { token, newPassword } = req.body;
-  console.log("Request body:", req.body);
+
   try {
     const userDB = await usersManager.findByResetToken(token);
 
@@ -206,8 +233,6 @@ const areRequiredDocumentsUploaded = (req) => {
 async function togglePremiumStatus(req, res) {
   const { uid } = req.params;
   const { files } = req;
-  console.log("Type of files:", typeof files);
-  console.log("Files:", files);
 
   try {
     const user = await usersManager.findById(uid);
@@ -216,10 +241,7 @@ async function togglePremiumStatus(req, res) {
     }
 
     // Verificar si el usuario ha cargado los documentos necesarios
-    console.log(
-      "Required documents uploaded:",
-      areRequiredDocumentsUploaded(req)
-    );
+
     if (!areRequiredDocumentsUploaded(req)) {
       return res.status(400).json({
         message: "Sube todas las imágenes requeridas para cambiar a premium.",
@@ -238,7 +260,6 @@ async function togglePremiumStatus(req, res) {
     // Guardar los cambios
     user.role = roles.PREMIUM;
     await user.save();
-    console.log("user premium?", user.role);
 
     Object.values(files).forEach((fieldFiles) => {
       fieldFiles.forEach((file) => {
@@ -266,18 +287,13 @@ async function togglePremiumStatus(req, res) {
       .status(200)
       .json({ message: "Premium status updated", isPremium: user.isPremium });
   } catch (error) {
-    console.error("Error updating premium status:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Error updating premium status" });
   }
 }
 
 async function uploadImages(req, res, next) {
   const { uid } = req.params;
   const { files } = req;
-
-  console.log("uid", uid);
-  console.log("files", files);
-  console.log("req.params", req.params);
 
   try {
     const user = await usersManager.findById(uid);
@@ -303,7 +319,7 @@ async function uploadImages(req, res, next) {
       // Agrega el nuevo documento al array
       user.documents.push(newDocument);
     });
-    console.log("user.status", user.status);
+
     await user.save();
 
     res
@@ -311,6 +327,40 @@ async function uploadImages(req, res, next) {
       .json({ message: "Documentos cargados exitosamente", files });
   } catch (error) {
     next(error);
+  }
+}
+
+async function deleteInactiveUsers(req, res) {
+  try {
+    const twoDaysAgo = moment().subtract(2, "days").toDate();
+
+    // Obtiene los usuarios inactivos
+    const inactiveUsers = await usersManager.getInactiveUsers(twoDaysAgo);
+    console.log("inactiveUsers", inactiveUsers);
+
+    // Envía un correo electrónico a cada usuario inactivo
+    for (const user of inactiveUsers) {
+      const mailOptions = {
+        from: "",
+        to: user.email, // Utiliza el correo del usuario
+        subject: "Eliminación de cuenta por inactividad",
+        text: `Tu cuenta ha sido eliminada por inactividad. Si deseas volver a utilizar nuestros servicios, por favor regístrate nuevamente.`,
+      };
+
+      await transporter.sendMail(mailOptions);
+    }
+
+    // Elimina los usuarios inactivos
+    const deleteResult = await usersManager.deleteUsers({
+      last_connection: { $lt: twoDaysAgo },
+    });
+
+    res.status(200).json({
+      message: `Eliminados ${deleteResult.deletedCount} usuarios inactivos`,
+    });
+  } catch (error) {
+    console.error("Error al limpiar usuarios inactivos:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 }
 
@@ -326,4 +376,6 @@ export {
   resetPassword,
   togglePremiumStatus,
   uploadImages,
+  deleteInactiveUsers,
+  deleteOne,
 };
