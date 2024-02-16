@@ -13,16 +13,19 @@ import { transporter } from "../utils/nodamailer.js";
 async function getAllUsers(req, res) {
   try {
     const users = await usersManager.getAllUsers(req.query);
-    const simplifiedUsers = users.map((user) => ({
-      first_name: user.first_name,
-      email: user.email,
-      role: user.role,
-    }));
+    const simplifiedUsers = users.map(
+      (user) =>
+        new UserDTO({
+          first_name: user.first_name,
+          email: user.email,
+          role: user.role,
+        })
+    );
 
-    logger.debug("Usuarios encontrado", users);
+    logger.debug("Usuarios encontrados", users);
     res.status(200).json({ message: "Users found", simplifiedUsers });
   } catch (error) {
-    logger.error("Error al intentar acceder a todos los users", {
+    logger.error("Error al intentar acceder a todos los usuarios", {
       error: error.message,
     });
     res.status(500).json({ message: error.message });
@@ -36,7 +39,7 @@ async function login(req, res, next) {
     const userDB = await usersManager.findByEmail(email);
 
     if (!userDB) {
-      throw NotFound.createErr("email");
+      return res.status(401).json({ error: "Email or password is incorrect" });
     }
 
     const isPasswordValid = await compareData(password, userDB.password);

@@ -58,3 +58,4 @@
 {"level":"error","message":"Insufficient stock for product with ID 6528a214679529d9639de6e2","timestamp":"2024-02-13T17:48:28.691Z"}
 {"level":"error","message":"Este es un mensaje de error","timestamp":"2024-02-14T17:21:22.099Z"}
 {"level":"fatal","message":"Este es un mensaje fatal","timestamp":"2024-02-14T17:21:22.390Z"}
+{"level":"error","message":"Ha ocurrido un error al intentar eliminar este producto: Cannot read properties of null (reading 'role')","stack":"TypeError: Cannot read properties of null (reading 'role')\n    at deleteProduct (file:///C:/Users/Matias/Desktop/DesafioEntregable-Websockets/src/controllers/product.controller.js:82:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2024-02-16T00:30:44.458Z"}

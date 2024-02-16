@@ -37,6 +37,7 @@ router.get("/:id", getUserById);
 
 router.post(
   "/premium/:uid",
+  authMiddleware([roles.ADMIN]),
   uploadPremium.fields([
     { name: "identificacion", maxCount: 1 },
     { name: "domicilio", maxCount: 1 },
@@ -46,6 +47,6 @@ router.post(
 );
 router.post("/:uid/documents", upload.array("documents"), uploadImages);
 
-router.delete("/delete", deleteInactiveUsers);
+router.delete("/delete", authMiddleware([roles.ADMIN]), deleteInactiveUsers);
 
 export default router;

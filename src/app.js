@@ -49,6 +49,7 @@ app.use(
     }),
   })
 );
+
 app.use(errorMidlleware);
 
 //passport
@@ -94,6 +95,7 @@ const socketServer = new Server(httpServer);
 
 const onConnection = async (socket) => {
   logger.info(`cliente conectado ${socket.id}`);
+
   await manageProductsHbs(socketServer, socket);
   await manageMessagesHbs(socketServer, socket);
 };

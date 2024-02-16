@@ -31,7 +31,6 @@
       <h1>Movies Market</h1>
     </header>
     <nav>
-
       {{#if loggedIn}}
         <a href="http://localhost:8080/">Inicio</a>
 
@@ -39,13 +38,17 @@
           <a href="http://localhost:8080/carts/{{cartId}}">Carrito</a>
         {{/if}}
 
+        {{#if isAdmin}}
+          <!-- Verifica si el usuario es administrador -->
+          <a href="http://localhost:8080/admin/user">Administrar Usuarios</a>
+          <!-- Mostrar solo para administradores -->
+        {{/if}}
+
         <a href="http://localhost:8080/api/users/logout">Cerrar sesión</a>
         <a href="http://localhost:8080/current">Perfil</a>
-      {{else}}
-        <a href="/login">Iniciar sesión</a>
       {{/if}}
-
     </nav>
+
     <main>
       {{{body}}}
     </main>

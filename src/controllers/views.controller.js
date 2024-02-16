@@ -4,7 +4,7 @@ import UserDTO from "../dto/user.dto.js";
 import { usersManager } from "../Dao/MongoDB/users.js";
 
 async function index(req, res) {
-  let email, first_name, loggedIn, cartId;
+  let email, first_name, loggedIn, cartId, isAdmin;
 
   // Verificar si hay un usuario autenticado a través de Passport
   if (req.user) {
@@ -22,23 +22,37 @@ async function index(req, res) {
       return res.redirect("/login");
     }
 
-    // Obtener el ID del carrito solo si el usuario está autenticado
+    // Obtener el ID del carrito solo si el usuario está autenticado / Verificar si el usuario es administrador
     const user = await usersManager.findByEmail(email);
     cartId = user ? user.cart._id : null;
+    isAdmin = user ? user.role === "admin" : false;
   }
 
   // Obtener productos
   const products = await productManager.find({});
 
   // Renderizar la vista index con la información obtenida
-  res.render("index", { products, first_name, email, loggedIn, cartId });
+  res.render("index", {
+    products,
+    first_name,
+    email,
+    loggedIn,
+    cartId,
+    isAdmin,
+  });
 }
 
 async function realTimeProducts(req, res) {
+  // Obtener la información de sesión del usuario
+  const userEmail = req.session.email;
+
+  // Obtener los productos
   const products = await productManager.find();
 
-  res.render("realTimeProducts", { products });
+  // Renderizar la vista y pasar la información de sesión y los productos
+  res.render("realTimeProducts", { userEmail, products });
 }
+
 async function current(req, res) {
   let first_name, email, role, loggedIn;
 
@@ -98,6 +112,11 @@ async function getCartView(req, res) {
     role = sessionRole;
   }
 
+  // Verificar si el usuario tiene los roles permitidos
+  if (!req.user && !req.session.email) {
+    return res.redirect("/login");
+  }
+
   res.render("cart", { cart, cid, loggedIn, role });
 }
 
@@ -150,25 +169,47 @@ async function upgradePremium(req, res) {
 
   res.render("premiumDocs", { userId });
 }
-
 async function userAdministrationRender(req, res) {
-  const userId = req.query.userId;
-  const user = usersManager.findById(userId);
-  res.render("adminUsers", { user: user });
+  let first_name, email, role, loggedIn;
+
+  // Verificar si hay un usuario autenticado a través de Passport
+  if (req.user) {
+    first_name = req.user.first_name;
+    email = req.user.email;
+    role = req.user.role;
+    loggedIn = true;
+  } else {
+    // Si no hay un usuario autenticado a través de Passport, verificar la sesión
+    first_name = req.session.first_name;
+    email = req.session.email;
+    role = req.session.role;
+    loggedIn = !!email;
+  }
+
+  if (!loggedIn) {
+    return res.redirect("/login");
+  }
+
+  // Verificar si el usuario tiene el rol de administrador
+  const isAdmin = role === "admin";
+
+  // Renderizar la vista de administración de usuarios con el navbar
+  res.render("adminUsers", { first_name, email, role, loggedIn, isAdmin });
 }
 
-async function administrateUserById(req, res) {
-  const { id } = req.params;
-  const user = await usersManager.findById(id);
+async function checkAdminRoleByEmail(req, res) {
+  const { email } = req.params;
+  const user = await usersManager.findByEmail(email);
+
   res.json({ user: user });
 }
-
 async function administrateUserRoleById(req, res) {
   const { id } = req.params;
   const { role } = req.body;
   const user = await usersManager.updateRoleById(id, role);
   await user.save();
-  res.redirect(`/admin/user/${id}`);
+
+  res.redirect(`/admin/user`);
 }
 
 async function deleteUserAccount(req, res) {
@@ -191,7 +232,7 @@ export {
   upload,
   upgradePremium,
   userAdministrationRender,
-  administrateUserById,
   administrateUserRoleById,
   deleteUserAccount,
+  checkAdminRoleByEmail,
 };

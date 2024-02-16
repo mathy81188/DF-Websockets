@@ -5,24 +5,24 @@ async function manageProductsHbs(io, socket) {
   socket.on("addProduct", async (product) => {
     const newProduct = await productManager.create(product);
 
-    io.socket.emit("productCreated", newProduct);
+    socket.emit("productCreated", newProduct);
 
     const updatedProducts = await productManager.find({});
-    io.socketServer.emit("updateProducts", updatedProducts);
+    io.sockets.emit("updateProducts", updatedProducts);
   });
 
   socket.on("deleteProduct", async (id) => {
     const deletedProduct = await productManager.deleteOne(id);
 
-    io.socket.emit("productDeleted", deletedProduct);
+    socket.emit("productDeleted", deletedProduct);
 
     const updatedProducts = await productManager.find({});
-    io.socketServer.emit("updateProducts", updatedProducts);
+    io.sockets.emit("updateProducts", updatedProducts);
   });
 
   socket.on("getProducts", async () => {
     const products = await productManager.find({});
-    io.socket.emit("initialProducts", products);
+    io.sockets.emit("initialProducts", products);
   });
 }
 

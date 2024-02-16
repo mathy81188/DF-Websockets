@@ -35,7 +35,7 @@ class UsersManager extends Manager {
 
   async deleteOneById(id) {
     const response = await usersModel.deleteOne({ _id: id });
-    console.log("responseManager", response);
+
     return response;
   }
 

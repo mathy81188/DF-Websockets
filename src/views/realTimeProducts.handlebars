@@ -9,9 +9,9 @@
     <input type="number" name="price" id="price" />
     Stock:
     <input type="number" name="stock" id="stock" />
-    <!-- Campo oculto para el owner 
-    <input type="hidden" name="owner" value="{{session.email}}" />
--->
+    <!-- Campo oculto para el owner -->
+    <input id="owner" type="hidden" name="owner" value="{{userEmail}}" />
+
     <input type="submit" value="Create" />
   </form>
 
@@ -35,6 +35,10 @@
         <td>{{description}}</td>
         <td>{{price}}</td>
         <td>{{stock}}</td>
+        <td><button
+            class="delete-button"
+            data-product-id="{{_id}}"
+          >Borrar</button></td>
 
       </tr>
 

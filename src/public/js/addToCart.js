@@ -40,6 +40,8 @@ function addToCart(cartId, productId) {
     body: JSON.stringify({}),
   }).then((response) => {
     if (response.ok) {
+      // Si la solicitud fue exitosa, actualizar la página
+      location.reload();
       // Si la solicitud fue exitosa, mostrar una notificación al usuario
       const swalInstance = Swal.mixin({
         toast: true,

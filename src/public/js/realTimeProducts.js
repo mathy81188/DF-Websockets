@@ -1,7 +1,3 @@
-import { logger } from "../../winston";
-
-logger.info("probando");
-
 const socketClient = io();
 const form = document.getElementById("form");
 const inputTitle = document.getElementById("title");
@@ -9,6 +5,7 @@ const inputDescription = document.getElementById("description");
 const inputPrice = document.getElementById("price");
 const inputStock = document.getElementById("stock");
 const table = document.getElementById("table");
+const inputOwner = document.getElementById("owner");
 
 document.addEventListener("DOMContentLoaded", () => {
   socketClient.emit("getProducts");
@@ -21,10 +18,11 @@ form.onsubmit = (e) => {
     description: inputDescription.value,
     price: inputPrice.value,
     stock: inputStock.value,
+    owner: inputOwner.value,
   };
 
   if (!product.title || !product.price) {
-    logger.error("Title and price are required");
+    console.log("Title and price are required");
     return;
   }
 
@@ -33,6 +31,7 @@ form.onsubmit = (e) => {
 
 socketClient.on("productCreated", (product) => {
   addProductToTable(product);
+  clearFormFields();
 });
 
 document.addEventListener("click", (e) => {
@@ -69,4 +68,11 @@ function renderProducts(products) {
   products.forEach((product) => {
     addProductToTable(product);
   });
+}
+
+function clearFormFields() {
+  inputTitle.value = "";
+  inputDescription.value = "";
+  inputPrice.value = "";
+  inputStock.value = "";
 }

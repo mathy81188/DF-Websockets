@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
   searchButton.addEventListener("click", function (event) {
     event.preventDefault();
 
-    const userId = document.getElementById("userId").value;
+    const userEmail = document.getElementById("userEmail").value;
 
-    fetch(`http://localhost:8080/admin/user/${userId}`)
+    fetch(`http://localhost:8080/admin/user/${userEmail}`)
       .then((response) => response.json())
       .then((data) => {
         const userInfoDiv = document.getElementById("userInfo");
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <form action="/admin/user/${data.user._id}/delete" method="POST" id="deleteForm">
                   <button id="deleteBtn"
                     type="submit"
-                    onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')"
+                    
                   >Eliminar Usuario</button>
                 </form>
               `;

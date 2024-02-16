@@ -38,7 +38,8 @@ npm install
    npm start
 
 2. Accede a la aplicación en tu navegador:
-   http://localhost:8080/
+   e-commerce http://localhost:8080/
+   Administrador http://localhost:8080/admin/user
 
 ## Tecnologías utilizadas
 
