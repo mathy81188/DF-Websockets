@@ -1,9 +1,3 @@
-//const socketClient = io();
-//const cartQuantityElement = document.getElementById("cart-quantity");
-//const productsContainer = document.getElementById("products-container");
-
-// addtocart.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const cartIdElement = document.getElementById("cart-id");
   const cartId = cartIdElement.dataset.cartId;
@@ -61,7 +55,7 @@ function addToCart(cartId, productId) {
       // Si la solicitud fue prohibida (403), mostrar un mensaje específico para usuario premium
       Swal.fire(
         "¡No se pudo agregar al carrito!",
-        "Los usuarios premium no pueden agregar sus propios productos al carrito.",
+        "Acción no permitida. Verifica tu acceso.",
         "warning"
       );
     } else {

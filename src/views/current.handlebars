@@ -1,3 +1,9 @@
 <h1>Welcome, {{userDTO.first_name}}!</h1>
 <p>Email: {{userDTO.email}}</p>
 <p>Role: {{userDTO.role}}</p>
+
+<button id="uploadButton">Subir Imagenes</button>
+{{#if showUpgradeButton}}
+  <button id="upgradeButton">Cambiar de Plan</button>
+{{/if}}
+<script src="/js/current.js"></script>

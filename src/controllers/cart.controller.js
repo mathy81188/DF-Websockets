@@ -108,9 +108,15 @@ async function updateProductByIdFromCartById(req, res) {
       // Verificar si el usuario intenta agregar un producto propio
       if (productInfo.owner === req.session.email) {
         return res.status(403).json({
-          message: "Premium users cannot add their own products to the cart",
+          message:
+            "Los usuarios premium no pueden agregar sus propios productos al carrito.",
         });
       }
+    } else if (userRole === "admin") {
+      // Agregar esta condición para los usuarios admin
+      return res.status(403).json({
+        message: "Los usuarios Admin no pueden agregar productos al carrito.",
+      });
     }
 
     // Llamar a la función de manager solo si la validación es exitosa

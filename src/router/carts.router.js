@@ -24,14 +24,22 @@ router.delete("/:cid", deleteCart);
 
 router.delete(
   "/:cid/product/:pid",
-  authMiddleware([roles.USER]),
+  authMiddleware([roles.USER, roles.PREMIUM]),
   deleteProductByIdFromCart
 );
 
 router.put("/:cid", authMiddleware([roles.USER]), updateCart);
 
-router.put("/:cid/product/:pid", updateProductByIdFromCartById);
+router.put(
+  "/:cid/product/:pid",
+  authMiddleware([roles.USER, roles.PREMIUM]),
+  updateProductByIdFromCartById
+);
 
-router.get("/:cid/purchase", purchaseCart);
+router.get(
+  "/:cid/purchase",
+  authMiddleware([roles.USER, roles.PREMIUM]),
+  purchaseCart
+);
 
 export default router;

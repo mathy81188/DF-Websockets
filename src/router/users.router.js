@@ -10,6 +10,7 @@ import {
   resetPasswordPage,
   resetPassword,
   togglePremiumStatus,
+  togglePremiumStatusWithImages,
   signUp,
   getAllUsers,
   uploadImages,
@@ -35,16 +36,19 @@ router.post("/reset-password/:token", requestPasswordRecovery);
 router.get("/regenerate-password-reset/:token", regeneratePasswordReset);
 router.get("/:id", getUserById);
 
+router.put("/premium/:uid", togglePremiumStatus);
+
 router.post(
   "/premium/:uid",
-  authMiddleware([roles.ADMIN]),
+
   uploadPremium.fields([
     { name: "identificacion", maxCount: 1 },
     { name: "domicilio", maxCount: 1 },
     { name: "estadoDeCuenta", maxCount: 1 },
   ]),
-  togglePremiumStatus
+  togglePremiumStatusWithImages
 );
+
 router.post("/:uid/documents", upload.array("documents"), uploadImages);
 
 router.delete("/delete", authMiddleware([roles.ADMIN]), deleteInactiveUsers);

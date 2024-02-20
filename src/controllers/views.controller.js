@@ -76,7 +76,9 @@ async function current(req, res) {
 
   const userDTO = new UserDTO({ first_name, email, role });
 
-  res.render("current", { userDTO, loggedIn });
+  const showUpgradeButton = userDTO.role === "user";
+
+  res.render("current", { userDTO, loggedIn, showUpgradeButton });
 }
 
 async function chat(req, res) {

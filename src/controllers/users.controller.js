@@ -235,6 +235,33 @@ const areRequiredDocumentsUploaded = (req) => {
 
 async function togglePremiumStatus(req, res) {
   const { uid } = req.params;
+  console.log("uid", uid);
+
+  try {
+    const user = await usersManager.findById(uid);
+    console.log("user", user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Cambiar el estado de premium
+    user.role = user.role === roles.USER ? roles.PREMIUM : roles.USER;
+    console.log("Premium status updated:", user.role);
+
+    // Guardar los cambios
+    await user.save();
+    console.log("User saved:", user);
+
+    return res
+      .status(200)
+      .json({ message: "Premium status updated", isPremium: user.isPremium });
+  } catch (error) {
+    console.error("Error updating premium status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+async function togglePremiumStatusWithImages(req, res) {
+  const { uid } = req.params;
   const { files } = req;
 
   try {
@@ -259,10 +286,6 @@ async function togglePremiumStatus(req, res) {
 
     // Cambiar el estado de premium
     user.role = user.role === roles.USER ? roles.PREMIUM : roles.USER;
-
-    // Guardar los cambios
-    user.role = roles.PREMIUM;
-    await user.save();
 
     Object.values(files).forEach((fieldFiles) => {
       fieldFiles.forEach((file) => {
@@ -306,8 +329,6 @@ async function uploadImages(req, res, next) {
 
     // Actualiza el status del usuario para indicar que ha subido un documento
     user.status = "Documentos cargados";
-
-    console.log("user.status", user.status);
 
     // Itera sobre los archivos y agrega documentos al array en el modelo User
     files.forEach((file) => {
@@ -378,6 +399,7 @@ export {
   requestPasswordRecovery,
   resetPassword,
   togglePremiumStatus,
+  togglePremiumStatusWithImages,
   uploadImages,
   deleteInactiveUsers,
   deleteOne,
